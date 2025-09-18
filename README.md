@@ -94,7 +94,6 @@ mint install getyourguide/spmgraph
 
 ## Acknowledgments
 - Inspired by the work that the [Tuist](https://tuist.dev/) team does for the Apple developers community and their focus on leveraging the dependency graph to provide amazing features for engineers. Also, source of inspiration for our shell abstraction layer. 
-- Thanks to the [Scipio](https://github.com/giginet/Scipio) team sharing knowledge about leveraging `PIF` and their experience with using the `SwiftPM` lib. 
 
 ## Open roadmap 
 - [ ] Cover the core logic of Lint, Map and Visualize libs with tests
