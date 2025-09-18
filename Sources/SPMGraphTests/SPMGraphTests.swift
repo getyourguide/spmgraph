@@ -266,12 +266,8 @@ private extension SPMGraphTests {
       allTestModulesToRun += testModulesToRun
     }
 
-    return Array(  // Maps the Array from a Set to ensure there are no duplicates. To be revisited.
-      Set(
-        allTestModulesToRun
-          .filter(\.name != "WorldTests")  // hack to unblock CI, check back soon
-      )
-    )
+    // Remove duplicate test modules
+    return allTestModulesToRun.spm_uniqueElements()
   }
 
   /// A function that generates the output with tests to run
