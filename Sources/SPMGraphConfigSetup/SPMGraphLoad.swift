@@ -1,0 +1,138 @@
+import Basics
+import Core
+import FileMonitor
+import Foundation
+
+// MARK: - Input & Error
+
+public struct SPMGraphLoadInput {
+  /// Directory path of the `SPMGraphConfig.swift` file, which is the same as the `Package.swift` file
+  let directory: AbsolutePath
+  /// A custom build directory used to build the package used to edit and load the SPMGraphConfig.
+  let buildDirectory: AbsolutePath
+  /// Show extra logging for troubleshooting purposes
+  let verbose: Bool
+
+  /// Makes an instance of ``SPMGraphConfigInput``
+  public init(
+    directory: String,
+    buildDirectory: String?,
+    verbose: Bool
+  ) throws {
+    self.directory = try AbsolutePath.packagePath(directory)
+    self.buildDirectory = try AbsolutePath.buildDirectory(buildDirectory)
+    self.verbose = verbose
+  }
+}
+
+public enum SPMGraphLoadError: Error {
+  case failedToReadTheConfig(underlying: Error)
+  case failedToLoadTheConfigIntoSpmgraph(localizedDescription: String)
+  case failedToSetupDynamicLoading(underlying: Error)
+}
+
+// MARK: - Abstraction and Implementation
+
+/// Represents a type that loads a spmgraph configuration
+public protocol SPMGraphLoadProtocol {
+  func run() async throws(SPMGraphLoadError)
+}
+
+/// A type that loads a spmgraph configuration
+public final class SPMGraphLoad: SPMGraphLoadProtocol {
+  private let input: SPMGraphLoadInput
+  private let buildDirectory: AbsolutePath
+
+  private var verbose: Bool {
+    input.verbose
+  }
+
+  private lazy var editPackageDirectory: AbsolutePath = buildDirectory.appending("spmgraph-config")
+  private lazy var dynamicLoadingFileDestination: AbsolutePath =
+    editPackageDirectory
+    .appending(component: "Sources")
+    .appending(component: "SPMGraphConfig")
+    .appending(component: "DoNotEdit_DynamicLoading")
+    .appending(extension: "swift")
+
+  public init(input: SPMGraphLoadInput) throws(SPMGraphLoadError) {
+    self.input = input
+    self.buildDirectory = input.buildDirectory
+  }
+
+  public func run() throws(SPMGraphLoadError) {
+    // Defines the path to the user configuration file
+    let userConfigFile = input.directory.appending("SPMGraphConfig.swift")
+
+    try load(userConfigFile: userConfigFile)
+  }
+}
+
+private extension SPMGraphLoad {
+  func load(userConfigFile: AbsolutePath) throws(SPMGraphLoadError) {
+    print("Loading your SPMGraphConfig.swift into spmgraph... please await")
+
+    try includeDynamicLoadingFile()
+
+    do {
+      if verbose {
+        try System.shared.run(
+          "swift",
+          "build",
+          "--package-path",
+          editPackageDirectory.pathString,
+          verbose: verbose
+        )
+      } else {
+        try System.shared.runAndCapture(
+          "swift",
+          "build",
+          "--package-path",
+          editPackageDirectory.pathString
+        )
+      }
+    } catch {
+      throw .failedToLoadTheConfigIntoSpmgraph(
+        localizedDescription: error.localizedDescription
+      )
+    }
+
+    try removeDynamicLoadingFile()
+
+    print("Finished loading")
+  }
+
+  func includeDynamicLoadingFile() throws(SPMGraphLoadError) {
+    do {
+      guard
+        let dynamicLoadingTemplateURL = Bundle.module.url(
+          forResource: "Resources/DoNotEdit_DynamicLoading",
+          withExtension: "txt"
+        )
+      else {
+        throw SPMGraphLoadError.failedToLoadTheConfigIntoSpmgraph(
+          localizedDescription: "Unable to read the dynamic loading template"
+        )
+      }
+
+      let dynamicLoadingTemplateFile = try AbsolutePath(
+        validating: dynamicLoadingTemplateURL.path()
+      )
+      // Copy the template DoNotEdit_DynamicLoading.swift file into the edit package
+      try localFileSystem.copy(
+        from: dynamicLoadingTemplateFile,
+        to: dynamicLoadingFileDestination
+      )
+    } catch {
+      throw .failedToSetupDynamicLoading(underlying: error)
+    }
+  }
+
+  func removeDynamicLoadingFile() throws(SPMGraphLoadError) {
+    do {
+      try FileManager.default.removeItem(at: dynamicLoadingFileDestination.asURL)
+    } catch {
+      throw .failedToSetupDynamicLoading(underlying: error)
+    }
+  }
+}

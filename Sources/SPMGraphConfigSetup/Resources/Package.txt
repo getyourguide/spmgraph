@@ -1,0 +1,47 @@
+// swift-tools-version: 6.0
+
+import PackageDescription
+
+let package = Package(
+  name: "SPMGraphConfig",
+  platforms: [
+    .macOS(.v13)
+  ],
+  products: [
+    .library(
+      name: "SPMGraphDescription",
+      type: .dynamic,
+      targets: [
+        "SPMGraphConfig"
+      ]
+    ),
+  ],
+  dependencies: [
+    // TODO: Replace by remote when made public
+    .package(path: "/Users/marino.felipe/Documents/projects/iOS/spmgraph"),
+    // TODO: TP-8515: Review which tag / Swift release to use
+    // - Initially it may be strict and sometimes "enforce" specific Xcode/Swift toolchains
+    // - For now pinned to the 6.0 release / Xcode 16.0
+    //
+    // It auto exports SwiftToolsSupport, so no need to directly depend on the former 🙏
+    .package(
+      url: "https://github.com/apple/swift-package-manager",
+      revision: "swift-6.0-RELEASE"
+    ),
+  ],
+  targets: [
+    .target(
+      name: "SPMGraphConfig",
+      dependencies: [
+        .product(
+          name: "SPMGraphDescriptionInterface",
+          package: "spmgraph"
+        ),
+        .product(
+          name: "SwiftPM",
+          package: "swift-package-manager"
+        )
+      ]
+    ),
+  ]
+)
