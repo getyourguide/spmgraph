@@ -73,6 +73,8 @@ public struct SPMGraphConfig: Sendable {
       self.isStrict = isStrict
       self.expectedWarningsCount = expectedWarningsCount
     }
+
+    public static let `default`: Self = .init(isStrict: false)
   }
 
   /// Configuration for selective testing.
@@ -110,6 +112,9 @@ public struct SPMGraphConfig: Sendable {
     self.tests = tests
     self.excludedSuffixes = excludedSuffixes
   }
+
+  /// The default ``SPMGraphConfig`` with strict mode disabled and the built-in lint rules.
+  public static let `default`: Self = .init(lint: .default)
 }
 
 typealias Validate = (Package, _ excludedSuffixes: [String]) -> [LocalizedError]
