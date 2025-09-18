@@ -77,7 +77,7 @@ extension SPMGraphConfig.Lint.Rule {
 }
 ``` 
 
-run `spmgraph lint <'Package.swift' path> help`
+run `spmgraph lint <'Package.swift' path> help` for more
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)
