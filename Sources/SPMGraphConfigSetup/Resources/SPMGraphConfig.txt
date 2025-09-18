@@ -1,0 +1,166 @@
+import Foundation
+import PackageModel
+import SPMGraphDescriptionInterface
+
+// MARK: - Instructions
+
+// You can leverage the minimal and advanced configurations below.
+//
+// By default, when using the minimal config, the lint rules are the `.default` ones included
+// in SPMGraphConfig.
+//
+// The advanced configuration contains examples of creating our own dependency graph rules,
+// including how to extend the PackageModel types with helpers that, for example, categorize types
+// of modules.
+//
+// Once you finish editing your final `spmGraphConfig`, build the `SPMGraphConfig` target
+// and see if everything is working fine.
+//
+// Have fun! Ah, and don't forget to select `macOS` as the build target ;)!
+
+// MARK: - Minimal
+
+//let spmGraphConfig = SPMGraphConfig(
+//  lint: SPMGraphConfig.Lint(isStrict: true)
+//)
+
+// MARK: - Advanced
+
+let spmGraphConfig = SPMGraphConfig(
+  lint: SPMGraphConfig.Lint(
+    rules: .custom + .default, // The default rules + your custom ones
+    isStrict: true,
+    expectedWarningsCount: 2
+  ),
+  tests: SPMGraphConfig.Tests(
+    baseBranch: "develop"
+  ),
+  excludedSuffixes: ["Tests"],
+  verbose: ProcessInfo.processInfo.environment["CI"] != nil
+)
+
+// MARK: Write your own rules
+
+enum CustomLintError: LocalizedError {
+  case abcModuleThirdPartyDependencies(module: String, thirdParty: String)
+  case ruleThatChecksTheSourceFilesContent(module: String, dependency: String)
+
+  var errorDescription: String? {
+    switch self {
+    case let .abcModuleThirdPartyDependencies(module, thirdParty):
+      "\(module) must not depend on the third party \(thirdParty)"
+    case let .ruleThatChecksTheSourceFilesContent(module, dependency):
+      "Lint error message for module: \(module) and dependency: \(dependency)"
+    }
+  }
+}
+
+public extension Array where Element == SPMGraphConfig.Lint.Rule {
+  static let custom: [SPMGraphConfig.Lint.Rule] = [
+    .abcFeatureModuleShouldNotDependOnThirdParties,
+    .ruleThatChecksTheSourceFilesContent,
+    // Example of how to use built in rules with your own conditions.
+    // Note that `.liveModuleLiveDependency()` and `.baseOrInterfaceModuleLiveDependency()` are
+    // enabled by default as part of the `.default` ones, so consider removing `.default` and picking the
+    // ones you wish to use!
+    .liveModuleLiveDependency(
+      isLiveModule: {
+        $0.name.hasSuffix("Implementation")
+      }
+    )
+  ]
+}
+
+extension SPMGraphConfig.Lint.Rule {
+  static let abcFeatureModuleShouldNotDependOnThirdParties = Self(
+    id: "moduleABCShouldNotDependOnThirdParties",
+    name: "The feature module ABC should not depend on third parties",
+    abstract: "A specific category of modules ABC should not have third party dependencies.",
+    validate: { package, excludedSuffixes in
+      let abcModules = package.modules
+        .filter { !$0.containsOneOf(suffixes: excludedSuffixes) }
+        .filter { $0.name.contains("ABC") && $0.isFeature }
+        .sorted()
+
+      let errors: [CustomLintError] =
+      abcModules
+        .map { abcModule in
+          abcModule.dependencies
+            .compactMap(\.product)
+            .map { thirdParty in
+              CustomLintError.abcModuleThirdPartyDependencies(
+                module: abcModule.name,
+                thirdParty: thirdParty.name
+              )
+            }
+        }
+        .reduce([], +)
+
+      return errors
+    }
+  )
+
+  static let ruleThatChecksTheSourceFilesContent = Self(
+    id: "ruleThatCheckTheSourceFilesContent",
+    name: "Unused linked dependencies",
+    abstract: """
+      To keep the project clean and avoid long compile times, a Module should not have any unused dependencies.
+      Note that for `@_exported` usages, there will be an error in case the only the exported module is used.
+      For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
+      there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
+      """,
+    validate: { package, excludedSuffixes in
+      let errors: [CustomLintError] = package.modules
+        // Filters out excluded suffixes and App modules
+        .filter { !$0.containsOneOf(suffixes: excludedSuffixes) && !$0.isApp }
+        .sorted()
+        .compactMap { module in
+          let dependencies = module
+            .dependencies
+            .filter { dependency in
+              let isExcluded = dependency.containsOneOf(suffixes: excludedSuffixes)
+              return !isExcluded && dependency.shouldBeImported
+            }
+          let swiftFiles = try? findSwiftFiles(in: module.path.pathString)
+
+          // Implement your logic and return lint errors when it applies
+          // For example, the default `unusedDependencies` rule checks if linked dependencies are
+          // actually imported, otherwise it errors out!
+
+          return nil // no error
+        }
+
+      return errors
+    }
+  )
+}
+
+// MARK: Examples of extending the PackageModel API
+
+private extension Module {
+  // Defines whether a module is an App module
+  var isApp: Bool {
+    name.contains("App") || name.hasSuffix("UI")
+  }
+
+  // Defines whether a module is a feature module
+  var isFeature: Bool {
+    name.contains("Feature")
+  }
+
+  // Whether it's an implementation and not an interface module
+  var isImplementation: Bool {
+    name.hasSuffix("Implementation")
+  }
+}
+
+private extension Module.Dependency {
+  // Macros and Plugins are dependencies that don't require an import clause,
+  // this helper allows excluding them from a rule that checks whether
+  // linked dependencies are used or not
+  var shouldBeImported: Bool {
+    guard let module else { return true }
+
+    return module.type != .macro && module.type != .plugin
+  }
+}

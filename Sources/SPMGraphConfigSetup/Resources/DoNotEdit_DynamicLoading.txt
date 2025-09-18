@@ -1,0 +1,14 @@
+import SPMGraphDescriptionInterface
+
+// MARK: - Dynamic Loading - DO NOT EDIT!
+
+final class ClientSPMGraphConfigBuilder: SPMGraphConfigBuilder {
+  override func build() -> SPMGraphConfig {
+    spmGraphConfig
+  }
+}
+
+@_cdecl("loadSPMGraphConfig")
+public func loadSPMGraphConfig() -> UnsafeMutableRawPointer {
+  return Unmanaged.passRetained(ClientSPMGraphConfigBuilder()).toOpaque()
+}
