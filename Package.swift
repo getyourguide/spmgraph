@@ -38,7 +38,7 @@ let package = Package(
       .upToNextMinor(from: "1.2.2")
     ),
 
-    // TODO: TP-8515: Review which tag / Swift release to use
+    // TODO: Review which tag / Swift release to use
     // - Initially it may be strict and sometimes "enforce" specific Xcode/Swift toolchains
     // - For now pinned to the 6.0 release / Xcode 16.0
     //
