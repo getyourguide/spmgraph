@@ -4,10 +4,10 @@ import SPMGraphDescriptionInterface
 
 // MARK: - Instructions
 
-// You can leverage the minimal and advanced configurations below.
+// You can leverage the default, minimal and advanced configurations below.
 //
-// By default, when using the minimal config, the lint rules are the `.default` ones included
-// in SPMGraphConfig.
+// When using either the `default` or the `minimal` configurations, the lint rules are the ones
+// that are default and built-in.
 //
 // The advanced configuration contains examples of creating our own dependency graph rules,
 // including how to extend the PackageModel types with helpers that, for example, categorize types
@@ -18,14 +18,21 @@ import SPMGraphDescriptionInterface
 //
 // Have fun! Ah, and don't forget to select `macOS` as the build target ;)!
 
+// MARK: - Default
+
+// the quickest path in case you don't care about the strict mode and custom lint rules
+let spmGraphConfig = SPMGraphConfig.default
+
 // MARK: - Minimal
 
-//let spmGraphConfig = SPMGraphConfig(
-//  lint: SPMGraphConfig.Lint(isStrict: true)
-//)
+// the default lint rules and strict mode enabled to fail on lint errors
+let spmGraphConfig = SPMGraphConfig(
+  lint: SPMGraphConfig.Lint(isStrict: true)
+)
 
 // MARK: - Advanced
 
+// custom configuration, with both default and team specific graph lint rules
 let spmGraphConfig = SPMGraphConfig(
   lint: SPMGraphConfig.Lint(
     rules: .custom + .default, // The default rules + your custom ones

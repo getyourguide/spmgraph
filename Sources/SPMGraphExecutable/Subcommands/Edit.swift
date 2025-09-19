@@ -52,8 +52,7 @@ struct Edit: AsyncParsableCommand {
     discussion: """
       It looks for an `SPMGraphConfig.swift` file in the same directory as the `Package.swift` under analyzes. If there's none, it creates a fresh one from a template.
 
-      Next, it generates a temporary package for editing your `SPMGraphConfig.swift`, where you customize multiple settings, from the expected warnings count to
-      writing your own dependency graph rules in Swift code.
+      Next, it generates a temporary package for editing your `SPMGraphConfig.swift`, where you customize multiple settings, from the expected warnings count to writing your own dependency graph rules in Swift code.
 
       Once the `SPMGraphConfig.swift` is edited, your configuration is dynamic loaded into spmgraph and leveraged on all other commands.  
       """,

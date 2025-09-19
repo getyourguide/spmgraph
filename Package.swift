@@ -31,7 +31,8 @@ let package = Package(
   dependencies: [
     .package(
       url: "https://github.com/tuist/GraphViz.git",
-      branch: "main"  // a few commits ahead of the deprecated GraphViz original repo. It also includes Xcode 16 fixes.
+      // a few commits ahead of the deprecated GraphViz original repo. It also includes Xcode 16 fixes.
+      revision: "083bccf9e492fd5731dd288a46741ea80148f508"
     ),
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
