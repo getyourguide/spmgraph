@@ -9,12 +9,12 @@ runs:
   using: 'composite'
   steps:
     - name: Switch to .xcode-version
-      run: xcodes select ${ inputs.xcode_version }
+      run: xcodes select ${{ inputs.xcode_version }}
       id: version_switch
       shell: /bin/bash -e {0}
     
     - name: Set env var with .xcode-version value
       if: failure()
       run: |
-        echo "XCODE_VERSION=$(cat .xcode-version)" >> $GITHUB_ENV
+        echo "XCODE_VERSION=$(cat ${{ inputs.xcode_version }})" >> $GITHUB_ENV
       shell: /bin/bash -e {0}
