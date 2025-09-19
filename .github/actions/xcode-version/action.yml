@@ -1,7 +1,9 @@
 name: 'Selects the Xcode toolchain'
-description: 'Checks and Attempts to switch to the toolchain defined by the .xcode-version file. Note: It requires xcodes to be installed on the runner.'
+description: 'Switches to the toolchain defined in the `xcode-version`. Note: It requires Xcodes to be installed on the runner and it follows the `.xcode-version` syntax defined here: https://github.com/XcodesOrg/xcodes/blob/main/XCODE_VERSION.md.'
+
+https://github.com/XcodesOrg/xcodes/blob/main/XCODE_VERSION.md
 inputs:
-  xcode_version:
+  xcode-version:
     description: 'The Xcode version to select'
     required: true
     default: '16.4'

@@ -25,7 +25,7 @@ jobs:
     - name: Select Xcode 16.4 toolchain
       uses: ./.github/actions/xcode-version
       with:
-        xcode_version: '16.4'
+        xcode-version: '16.4'
       timeout-minutes: 2
     
     - name: Build spmgraph for Xcode 16.4
@@ -35,7 +35,7 @@ jobs:
     - name: Select Xcode 26.0 toolchain
       uses: ./.github/actions/xcode-version
       with:
-        xcode_version: '26.0'
+        xcode-version: '26.0'
       timeout-minutes: 2
 
     - name: Build spmgraph for Xcode 26.0
