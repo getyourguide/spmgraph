@@ -22,10 +22,22 @@ jobs:
       uses: actions/checkout@v4
       timeout-minutes: 2
 
-    - name: Select Xcode toolchain
+    - name: Select Xcode 16.4 toolchain
       uses: ./.github/actions/xcode-version
+      with:
+        xcode_version: '16.4'
       timeout-minutes: 2
     
-    - name: Build spmgraph
+    - name: Build spmgraph for Xcode 16.4
+      run: swift build
+      timeout-minutes: 10
+
+    - name: Select Xcode 26.0 toolchain
+      uses: ./.github/actions/xcode-version
+      with:
+        xcode_version: '26.0'
+      timeout-minutes: 2
+
+    - name: Build spmgraph for Xcode 26.0
       run: swift build
       timeout-minutes: 10
