@@ -1,5 +1,5 @@
 {
-  "originHash" : "28b0823a1db28dd4f63c34e7404bf168ddefb7dc89c4bec8fd541c1de6acac53",
+  "originHash" : "a6a226de3b06cc20dcca8a35c4d9d79870436d050b919e889fe62edb8e7de24e",
   "pins" : [
     {
       "identity" : "filemonitor",
@@ -15,7 +15,6 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/tuist/GraphViz.git",
       "state" : {
-        "branch" : "main",
         "revision" : "083bccf9e492fd5731dd288a46741ea80148f508"
       }
     },
