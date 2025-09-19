@@ -118,11 +118,7 @@ let package = Package(
         .product(
           name: "SwiftPMDataModel",
           package: "swift-package-manager"
-        ),
-        .product(
-          name: "PackagePlugin",
-          package: "swift-package-manager"
-        ),
+        )
       ]
     ),
 
