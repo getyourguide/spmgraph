@@ -1,5 +1,5 @@
 name: Pull Request
-
+description: Run the pull request checks, such as building spmgraph for different toolchains and running tests.
 on:
   pull_request:
     types: [synchronize, opened, reopened, edited] # The first three are defaults, with 'edited' included the builds will be triggered on things like the base of the branch changing
@@ -12,7 +12,7 @@ concurrency:
 jobs:        
   build_and_tests:
     name: Build and run tests
-    runs-on: [self-hosted, macOS, ARM64, macstadium, bare-metal]
+    runs-on: [self-hosted, macOS, ARM64, macstadium, bare-metal] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
         id-token: write
         contents: read
