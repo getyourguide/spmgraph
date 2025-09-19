@@ -115,7 +115,7 @@ private extension SPMGraphLoad {
       )
     }
 
-    try removeDynamicLoadingFile()
+    defer { try? removeDynamicLoadingFile() }
 
     print("Finished loading")
   }
