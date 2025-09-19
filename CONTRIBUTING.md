@@ -4,7 +4,7 @@ When contributing to this repository, we encourage you to first discuss the chan
 We're not strict about this, and for small changes, feel free to open a pull request directly.
 
 ## Local development
-To run it locally during development
+To run it locally during development:
 
 #### CLI
 run `swift run spmgraph <command> <options>`
