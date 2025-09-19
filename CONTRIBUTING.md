@@ -1,6 +1,6 @@
 # Contributing
 
-When contributing to this repository, we encourage you first to discuss the change you wish to make via an issue before submitting a change. 
+When contributing to this repository, we encourage you to first discuss the change you wish to make via an issue before submitting a change. 
 We're not strict about this, and for small changes, feel free to open a pull request directly.
 
 ## Local development
