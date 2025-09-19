@@ -205,7 +205,11 @@ public extension SPMGraphConfig.Lint.Rule {
     name: "Unused linked dependencies",
     abstract: """
       To keep the project clean and avoid long compile times, a Module should not have any unused dependencies.
-      Note that for `@_exported` usages, there will be an error in case the only the exported module is used.
+      
+      - Note: It does blindly expects the target to match the product name, and doesn't yet consider
+      the multiple targets that compose a product (open improvement). 
+      
+      - Note: For `@_exported` usages, there will be an error in case only the exported module is used.
       For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
       there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error. 
       """,

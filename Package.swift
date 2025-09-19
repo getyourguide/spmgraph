@@ -65,7 +65,7 @@ let package = Package(
           package: "GraphViz"
         ),
         .product(
-          name: "SwiftPM",
+          name: "SwiftPMDataModel",
           package: "swift-package-manager"
         ),
       ]
@@ -104,7 +104,7 @@ let package = Package(
       name: "SPMGraphDescriptionInterface",
       dependencies: [
         .product(
-          name: "SwiftPM",
+          name: "SwiftPMDataModel",
           package: "swift-package-manager"
         )
       ]
@@ -116,13 +116,9 @@ let package = Package(
       name: "Core",
       dependencies: [
         .product(
-          name: "SwiftPM",
+          name: "SwiftPMDataModel",
           package: "swift-package-manager"
-        ),
-        .product(
-          name: "PackagePlugin",
-          package: "swift-package-manager"
-        ),
+        )
       ]
     ),
 

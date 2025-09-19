@@ -117,6 +117,9 @@ private extension SPMGraphVisualize {
     let graph = generateDependencyGraph(package: package, input: input)
 
     try await withCheckedThrowingContinuation { continuation in
+      // N.B.: gvRenderData may crash in Debug with a bad pointer (e.g. 0x100000000) when copying to `Data`.
+      // Likely causes: C ABI mismatch, header/runtime mismatch, or concurrent use of a Graphviz context.
+      // Mitigations: Run in release mode where the memory layout is different or enable the AddressSanitizer, which can mask the issue.
       graph.render(using: .dot, to: .png) { [weak system] result in
         switch result {
         case let .success(data):
