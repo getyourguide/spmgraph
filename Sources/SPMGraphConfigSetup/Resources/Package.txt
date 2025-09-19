@@ -18,7 +18,7 @@ let package = Package(
   ],
   dependencies: [
     // TODO: Replace by remote when made public
-    .package(path: "/Users/marino.felipe/Documents/projects/iOS/spmgraph"),
+    .package(path: "/Users/marino.felipe/Documents/projects/spmgraph"),
     // TODO: Review which tag / Swift release to use
     // - Initially it may be strict and sometimes "enforce" specific Xcode/Swift toolchains
     // - For now pinned to the 6.0 release / Xcode 16.0
@@ -38,7 +38,7 @@ let package = Package(
           package: "spmgraph"
         ),
         .product(
-          name: "SwiftPM",
+          name: "SwiftPMDataModel",
           package: "swift-package-manager"
         )
       ]
