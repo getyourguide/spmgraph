@@ -1,0 +1,31 @@
+name: Pull Request
+
+on:
+  pull_request:
+    types: [synchronize, opened, reopened, edited] # The first three are defaults, with 'edited' included the builds will be triggered on things like the base of the branch changing
+  workflow_dispatch:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:        
+  build_and_tests:
+    name: Build and run tests
+    runs-on: [self-hosted, macOS, ARM64, macstadium, bare-metal]
+    permissions:
+        id-token: write
+        contents: read
+        checks: write
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      timeout-minutes: 2
+
+    - name: Select Xcode toolchain
+      uses: ./.github/actions/xcode-version
+      timeout-minutes: 2
+    
+    - name: Build spmgraph
+      run: swift build
+      timeout-minutes: 10

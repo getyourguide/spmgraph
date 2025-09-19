@@ -1,0 +1,15 @@
+name: 'Selects the Xcode toolchain'
+description: 'Checks and Attempts to switch to the toolchain defined by the .xcode-version file. Note: It requires xcodes to be installed on the runner.'
+runs:
+  using: 'composite'
+  steps:
+    - name: Switch to .xcode-version
+      run: xcodes select # Run without arguments to select the version specified in your .xcode-version file
+      id: version_switch
+      shell: /bin/bash -e {0}
+    
+    - name: Set env var with .xcode-version value
+      if: failure()
+      run: |
+        echo "XCODE_VERSION=$(cat .xcode-version)" >> $GITHUB_ENV
+      shell: /bin/bash -e {0}
