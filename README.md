@@ -150,6 +150,7 @@ mint install getyourguide/spmgraph
 - [ ] Cover the core logic of Lint, Map, and Visualize libs with tests
 - [ ] Improve the `unusedDependencies` lint rule to cover products with multiple targets
 - [ ] Support macros (to become a GitHub issue)
+- [ ] Create Danger plugin for the linter functionality
 
 Ideas
 - [ ] Lint - see if it can be improved to cover auto-exported dependencies. For example, usages of `import Dependencies` justify linking `DependenciesExtras` as a dependency.
