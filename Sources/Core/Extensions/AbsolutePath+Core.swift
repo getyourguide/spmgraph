@@ -37,7 +37,7 @@ public extension AbsolutePath {
     )
   }
 
-  static func buildDirectory(_ path: String?) throws -> AbsolutePath {
+  static func configBuildDirectory(_ path: String?) throws -> AbsolutePath {
     if let path {
       try AbsolutePath(
         validating: path,

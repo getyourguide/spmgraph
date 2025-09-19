@@ -41,6 +41,9 @@ struct LintArguments: ParsableArguments {
       "The number of allowed warnings for the strict mode. note: It can be useful to **bypass the strict mode in specific scenarios**. `The default is zero`."
   )
   public var expectedWarningsCount: UInt = 0
+
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 }
 
 struct Lint: AsyncParsableCommand {
@@ -60,7 +63,7 @@ struct Lint: AsyncParsableCommand {
     let library = try SPMGraphLint(
       input: SPMGraphLintInput(
         spmPackageDirectory: arguments.common.spmPackageDirectory,
-        buildDirectory: arguments.common.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         excludedSuffixes: arguments.common.excludedSuffixes,
         isStrict: arguments.strict,
         verbose: arguments.common.verbose,

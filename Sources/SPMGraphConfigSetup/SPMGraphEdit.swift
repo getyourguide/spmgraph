@@ -26,7 +26,7 @@ import Foundation
 public struct SPMGraphEditInput {
   /// Directory path of the Package.swift file
   let spmPackageDirectory: AbsolutePath
-  /// A custom build directory used to build the package used to edit and load the SPMGraphConfig.
+  /// A custom build directory for the package used to edit and load the SPMGraphConfig.
   let buildDirectory: AbsolutePath
   /// Show extra logging for troubleshooting purposes
   let verbose: Bool
@@ -34,11 +34,11 @@ public struct SPMGraphEditInput {
   /// Makes an instance of ``SPMGraphLintInput``
   public init(
     spmPackageDirectory: String,
-    buildDirectory: String?,
+    configBuildDirectory: String?,
     verbose: Bool
   ) throws {
     self.spmPackageDirectory = try AbsolutePath.packagePath(spmPackageDirectory)
-    self.buildDirectory = try AbsolutePath.buildDirectory(buildDirectory)
+    self.buildDirectory = try AbsolutePath.configBuildDirectory(configBuildDirectory)
     self.verbose = verbose
   }
 }

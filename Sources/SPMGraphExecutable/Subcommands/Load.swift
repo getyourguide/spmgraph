@@ -32,17 +32,8 @@ struct LoadArguments: ParsableArguments {
   )
   var directory: String
 
-  @Option(
-    help: """
-      A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-      It defaults to a temporary directory.
-
-      Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
-
-      Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
-      """
-  )
-  var buildDirectory: String?
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 }
 
 struct Load: AsyncParsableCommand {
@@ -59,7 +50,7 @@ struct Load: AsyncParsableCommand {
     let load = try SPMGraphLoad(
       input: try SPMGraphLoadInput(
         directory: arguments.directory,
-        buildDirectory: arguments.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         verbose: arguments.verbose
       )
     )

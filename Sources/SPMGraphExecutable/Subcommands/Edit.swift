@@ -32,17 +32,8 @@ struct EditArguments: ParsableArguments {
   )
   var spmPackageDirectory: String
 
-  @Option(
-    help: """
-      A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-      It defaults to a temporary directory.
-
-      Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
-
-      Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
-      """
-  )
-  var buildDirectory: String?
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 }
 
 struct Edit: AsyncParsableCommand {
@@ -54,7 +45,7 @@ struct Edit: AsyncParsableCommand {
 
       Next, it generates a temporary package for editing your `SPMGraphConfig.swift`, where you customize multiple settings, from the expected warnings count to writing your own dependency graph rules in Swift code.
 
-      Once the `SPMGraphConfig.swift` is edited, your configuration is dynamic loaded into spmgraph and leveraged on all other commands.  
+      Once the `SPMGraphConfig.swift` is edited, your configuration is dynamically loaded into spmgraph and leveraged on all other commands.  
       """,
     version: "1.0.0"
   )
@@ -65,7 +56,7 @@ struct Edit: AsyncParsableCommand {
     let spmgraphEdit = try SPMGraphEdit(
       input: SPMGraphEditInput(
         spmPackageDirectory: arguments.spmPackageDirectory,
-        buildDirectory: arguments.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         verbose: arguments.verbose
       )
     )
