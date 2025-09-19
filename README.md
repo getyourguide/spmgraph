@@ -97,6 +97,7 @@ mint install getyourguide/spmgraph
 
 ## Open roadmap 
 - [ ] Cover the core logic of Lint, Map and Visualize libs with tests
+- [ ] Improve the `unusedDependencies` lint rule to cover products with multiple targets
 - [ ] Support macros (to become a GitHub issue)    
 
 Ideas
