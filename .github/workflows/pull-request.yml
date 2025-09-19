@@ -30,7 +30,7 @@ jobs:
     
     - name: Build spmgraph for Xcode 16.4
       run: swift build
-      timeout-minutes: 10
+      timeout-minutes: 4
 
     - name: Select Xcode 26.0 toolchain
       uses: ./.github/actions/xcode-version
@@ -40,4 +40,4 @@ jobs:
 
     - name: Build spmgraph for Xcode 26.0
       run: swift build
-      timeout-minutes: 10
+      timeout-minutes: 4
