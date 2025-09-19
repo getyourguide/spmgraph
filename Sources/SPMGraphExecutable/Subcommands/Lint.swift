@@ -48,8 +48,10 @@ struct LintArguments: ParsableArguments {
 
 struct Lint: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
-    abstract:
-      "Lints your Package.swift dependency graph and uncovers configuration issues. Arguments take precedence over the matching `SPMGraphConfig.swift` options.",
+    abstract: """
+    Lints your Package.swift dependency graph and uncovers configuration issues. Arguments take precedence over the matching `SPMGraphConfig.swift` options.
+    **Note**: It requires setting up your spmgraph configuration first; for that run `spmgraph config` to define your lint rules, and then load them using `spmgraph load`.
+    """,
     discussion: """
         Run checks on a given Package.swift and raises configuration issues and potential optimisations
         that otherwise would be bubbled up by the build system later on.

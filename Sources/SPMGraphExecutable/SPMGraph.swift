@@ -63,7 +63,7 @@ struct SPMGraph: AsyncParsableCommand {
       """,
     version: "1.0.0",
     subcommands: [
-      Edit.self,
+      Config.self,
       Load.self,
       Tests.self,
       Lint.self,

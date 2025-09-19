@@ -20,7 +20,7 @@ import ArgumentParser
 import Foundation
 import SPMGraphConfigSetup
 
-struct EditArguments: ParsableArguments {
+struct ConfigArguments: ParsableArguments {
   @Flag(
     name: [.customLong("verbose"), .customShort("v")],
     help: "Show extra logging for troubleshooting purposes."
@@ -36,10 +36,10 @@ struct EditArguments: ParsableArguments {
   var config: SPMGraphConfigArguments
 }
 
-struct Edit: AsyncParsableCommand {
+struct Config: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract:
-      "Initializes or edit your spmgraph configuration, including your dependency graph rules written in Swift.",
+      "Init or edit your spmgraph configuration, including your dependency graph rules written in Swift.",
     discussion: """
       It looks for an `SPMGraphConfig.swift` file in the same directory as the `Package.swift` under analyzes. If there's none, it creates a fresh one from a template.
 
@@ -50,7 +50,7 @@ struct Edit: AsyncParsableCommand {
     version: "1.0.0"
   )
 
-  @OptionGroup var arguments: EditArguments
+  @OptionGroup var arguments: ConfigArguments
 
   mutating func run() async throws {
     let spmgraphEdit = try SPMGraphEdit(
