@@ -146,12 +146,11 @@ mint install getyourguide/spmgraph
 ## Acknowledgments
 - Inspired by the work that the [Tuist](https://tuist.dev/) team does for the Apple developers community and their focus on leveraging the dependency graph to provide amazing features for engineers. Also, a source of inspiration for our shell abstraction layer. 
 
-## Open roadmap 
+## Open roadmap
 - [ ] Cover the core logic of Lint, Map, and Visualize libs with tests
 - [ ] Improve the `unusedDependencies` lint rule to cover products with multiple targets
 - [ ] Support macros (to become a GitHub issue)
-- [ ] Create Danger plugin for the linter functionality
 
 Ideas
-- [ ] Lint - see if it can be improved to cover auto-exported dependencies. For example, usages of `import Dependencies` justify linking `DependenciesExtras` as a dependency.
 - [ ] Add fix-it suggestion to lint errors
+- [ ] Create Danger plugin for the linter functionality
