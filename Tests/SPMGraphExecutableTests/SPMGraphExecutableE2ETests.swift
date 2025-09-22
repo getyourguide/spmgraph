@@ -46,7 +46,7 @@ struct SPMGraphExecutableE2ETests {
   ///
   /// - warning: For this to work it has to be run via the spmgraph testplan, where the Address Sanitizer is enabled,
   /// which works around potential memory crashes with graphviz in debug
-  @Test(.enabled(if: ProcessInfo.isSpmgraphTestPlan))
+  @Test(.enabled(if: ProcessInfo.isSpmgraphTestPlan || ProcessInfo.isCI))
   func visualize() async throws {
     // GIVEN
     let outputPath = try localFileSystem.tempDirectory
@@ -263,22 +263,12 @@ private extension SPMGraphExecutableE2ETests {
     waitForExit: Bool = true
   ) throws {
     let commands = command.split(whereSeparator: \.isWhitespace)
-
-    var arguments: [String]
-    if commands.count > 1 {
-      arguments = commands.map { String($0) }
-    } else {
-      arguments = command
-        .split { [" -", " --"].contains(String($0)) }
-        .map { String($0) }
-    }
+    let arguments = commands.map(String.init)
 
     let executableURL = Bundle.productsDirectory.appendingPathComponent("spmgraph")
 
     process.executableURL = executableURL
     process.arguments = arguments
-//    process.standardOutput = FileHandle.nullDevice
-//    process.standardError = FileHandle.nullDevice
     process.standardOutput = outputPipe
     process.standardError = errorPipe
 
@@ -299,7 +289,10 @@ private extension SPMGraphExecutableE2ETests {
     let errorContent = String(data: errorData, encoding: .utf8) ?? ""
 
     #expect(
-      errorContent.isEmpty != expectsError, "Found error: \(errorContent)",
+      errorContent.isEmpty != expectsError,
+      expectsError
+      ? "Expected error, but none was found."
+      : "Unexpected error found: \(errorContent)",
       sourceLocation: sourceLocation
     )
 
@@ -334,20 +327,26 @@ private extension ProcessInfo {
   static var isSpmgraphTestPlan: Bool {
     processInfo.environment["TESTPLAN"] == "spmgraph"
   }
+  static var isCI: Bool {
+    processInfo.environment["CI"] != nil
+  }
 }
 
 private extension Bundle {
   /// Returns path to the built products directory.
   static var productsDirectory: URL {
     #if os(macOS)
-//    for bundle in allBundles where bundle.bundlePath.hasSuffix(".xctest") {
-//      return bundle.bundleURL.deletingLastPathComponent()
-//    }
-//    fatalError("couldn't find the products directory")
-    return localFileSystem.currentWorkingDirectory!
-      .appending(".build")
-      .appending(component: "debug")
-      .asURL
+    if ProcessInfo.isSpmgraphTestPlan {
+      for bundle in allBundles where bundle.bundlePath.hasSuffix(".xctest") {
+        return bundle.bundleURL.deletingLastPathComponent()
+      }
+      fatalError("couldn't find the products directory")
+    } else {
+      return localFileSystem.currentWorkingDirectory!
+        .appending(".build")
+        .appending(component: "debug")
+        .asURL
+    }
     #else
     return main.bundleURL
     #endif
