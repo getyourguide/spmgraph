@@ -137,5 +137,14 @@ let package = Package(
         ),
       ]
     ),
+
+    // MARK: - Tests
+
+    .testTarget(
+      name: "SPMGraphExecutableTests",
+      dependencies: [
+        .target(name: "SPMGraphExecutable"),
+      ]
+    )
   ]
 )
