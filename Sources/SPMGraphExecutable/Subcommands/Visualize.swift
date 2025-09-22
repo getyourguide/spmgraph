@@ -37,7 +37,7 @@ struct VisualizeArguments: ParsableArguments {
   @Option(
     name: [.customShort("o"), .customLong("output", withSingleDash: false)],
     help:
-      "Custom output file path for the generated PNG file. Default will generate a 'graph.png' file in the current directory"
+      "Custom output file path for the generated PNG file. By default a 'graph.png' file is generated in the current directory"
   )
   var outputFilePath: String?
 

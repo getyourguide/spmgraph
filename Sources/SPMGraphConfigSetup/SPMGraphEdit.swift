@@ -125,6 +125,11 @@ public final class SPMGraphEdit: SPMGraphEditProtocol {
 
 private extension SPMGraphEdit {
   func openEditPackage() throws(SPMGraphEditError) {
+    guard !ProcessInfo.isRunningTests else {
+      print("Skipped opening the edit package in tests...")
+      return
+    }
+
     if verbose {
       print("Opening the edit package...")
     }

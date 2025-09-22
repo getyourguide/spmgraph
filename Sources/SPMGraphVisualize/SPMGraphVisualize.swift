@@ -34,7 +34,7 @@ public struct SPMGraphVisualizeInput {
   /// Flag to exclude third-party dependencies from the graph declared in the `Package.swift`
   let excludeThirdPartyDependencies: Bool
   /// Custom output file path for the generated PNG file. Default will generate a 'graph.png' file in the current directory
-  let outputFilePath: String?
+  let outputFilePath: AbsolutePath
   /// Minimum vertical spacing between the ranks (levels) of the graph. Default is set to 4. Is a double value in inches.
   let rankSpacing: Double
   /// Show extra logging for troubleshooting purposes
@@ -54,9 +54,20 @@ public struct SPMGraphVisualizeInput {
     self.excludedSuffixes = excludedSuffixes
     self.focusedModule = focusedModule
     self.excludeThirdPartyDependencies = excludeThirdPartyDependencies
-    self.outputFilePath = outputFilePath
     self.rankSpacing = rankSpacing
     self.verbose = verbose
+
+    if let outputFilePath {
+      self.outputFilePath = try AbsolutePath(
+        validating: outputFilePath,
+        relativeTo: .currentDir
+      )
+    } else {
+      // the default output path
+      self.outputFilePath = AbsolutePath.currentDir
+        .appending(component: "graph")
+        .appending(extension: "png")
+    }
   }
 }
 
@@ -123,32 +134,25 @@ private extension SPMGraphVisualize {
       graph.render(using: .dot, to: .png) { [weak system] result in
         switch result {
         case let .success(data):
-          let fileURL = URL(
-            fileURLWithPath: input.outputFilePath
-              ?? FileManager.default.currentDirectoryPath.appending("/graph.png")
-          )
-
           do {
-            try data.write(to: fileURL)
+            try data.write(to: input.outputFilePath.asURL)
 
-            try system?
-              .run(
-                "open",
-                fileURL.absoluteString,
-                verbose: true
-              )
+            // Opens the generated graph unless running tests
+            if !ProcessInfo.isRunningTests {
+              try system?
+                .run(
+                  "open",
+                  input.outputFilePath.pathString,
+                  verbose: true
+                )
+            }
+            continuation.resume(returning: ())
           } catch {
-            try? system?
-              .echo(
-                "Failed save and open graph visualization file with error: \(error.localizedDescription)"
-              )
+            continuation.resume(throwing: error)
           }
         case let .failure(error):
-          try? system?
-            .echo("Failed to render dependency graph with error: \(error.localizedDescription)")
+          continuation.resume(throwing: error)
         }
-
-        continuation.resume(returning: ())
       }
     }
   }
