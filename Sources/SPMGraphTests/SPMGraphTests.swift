@@ -137,8 +137,11 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
     } else {
       let changedFilesString = input.changedFiles
       changedFiles = try changedFilesString.map {
-        let relativePath = try RelativePath(validating: $0)
-        return AbsolutePath.currentDir.appending(relativePath)
+        // Uses the AbsolutePath initializer that accepts either a relative or an absolute path
+        try AbsolutePath(
+          validating: $0,
+          relativeTo: .currentDir
+        )
       }
     }
 
