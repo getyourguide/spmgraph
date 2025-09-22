@@ -1,0 +1,74 @@
+name: 'spmgraph tests'
+description: 'Map tests to run based on changed files of a given dependency graph'
+inputs:
+  package_directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  excluded_suffixes:
+    description: Comma separated suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
+    required: false
+    default: ''
+  base_branch:
+    description: Base branch to compare the changes against
+    required: false
+    default: 'main'
+  changed_files:
+    description: Optional list of changed files. Otherwise git versioning is used
+    required: false
+    default: ''
+  output_format:
+    description: "The output mode. Options are: textDump, textFile. The first dumps the list of test modules to run in a single line, while the latter Saves the list of test modules into an `output.txt` file in the `current dir`. Both follow the following the xcodebuild/fastlane scan expected format."
+    required: false
+    default: 'textDump'
+  adds_to_summary: 
+    description: List the filtered tests in the action summary.
+    type: boolean
+    default: false
+  config-build-directory:
+    description: >
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+    required: false
+outputs:
+  test_targets:
+    description: A comma separated list of test targets to run. It can be passed as is to xcodebuild or fastlane scan.
+    value: ${{ steps.spmgraph_test.outputs.test_targets }}
+  tests_needed:
+    description: Whether running tests is needed or not.
+    value: ${{ steps.spmgraph_test.outputs.tests_needed }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: spmgraph_test
+      name: Run spmgraph tests
+      run: |
+        # note: changed_files take precedence over baseBranch
+        spmgraph tests ${{ inputs.package_directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} --baseBranch ${{ github.base_ref || 'main' }} --output ${{ inputs.output_format }} ${{ inputs.excluded_suffixes && '--excludedSuffixes ${{ inputs.excluded_suffixes }}' || '' }} ${{ inputs.changed_files && '--changed_files ${{ inputs.changed_files }}' || '' }} ${{ inputs.config-build-directory && '--config-build-directory ${{ inputs.config-build-directory }}' || '' }}
+        if [ ! -s "$GITHUB_WORKSPACE/output.txt" ]; then
+          echo "tests_needed=false" >> $GITHUB_OUTPUT
+        else
+          echo "tests_needed=true" >> $GITHUB_OUTPUT
+          echo "test_targets=$(cat $GITHUB_WORKSPACE/output.txt)" >> $GITHUB_OUTPUT
+        fi
+      shell: /bin/bash -e {0}
+
+    - name: Write to workflow job summary
+      if: ${{ inputs.adds_to_summary == 'true' }}
+      run: |
+        tests_summary=$'# spmgraph tests\n## Tests to run\n'
+        echo "$tests_summary" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ steps.spmgraph_test.outputs.tests_needed }}" != "false" ]; then
+          cat $GITHUB_WORKSPACE/output.txt | tr ',' '\n' | sort >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No tests to run" >> $GITHUB_STEP_SUMMARY
+        fi
+      shell: /bin/bash -e {0}

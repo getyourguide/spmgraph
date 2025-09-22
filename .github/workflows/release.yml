@@ -1,0 +1,85 @@
+name: Release
+description: Release a new version of spmgraph. It's inpired by the internal https://github.com/getyourguide/actions/tree/main/semver-release.
+on:
+  workflow_dispatch:
+    inputs:
+      updateType:
+        description: 'Semver release type'
+        required: true
+        default: 'patch'
+        type: choice
+        options:
+            - patch
+            - minor
+            - major
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:        
+  build_and_tests:
+    name: Build and run tests
+    runs-on: [self-hosted, java-small] # TODO: Replace with GitHub Action runners once it goes open source
+    permissions:
+        id-token: write
+        contents: write
+        actions: write
+        checks: write
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      timeout-minutes: 2
+
+    - name: Get the latest release tag
+      run: |
+        git fetch --prune --prune-tags
+        latest_tag=$(git tag --sort=committerdate | tail -1)
+        echo "latest_tag=$latest_tag" >> $GITHUB_ENV
+
+    - name: Bump version
+      run: |
+        # Read the latest tag from the GITHUB_ENV and extract the values from it
+        latest_tag=${{ env.latest_tag }}
+        if [[ $latest_tag =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+            major="${BASH_REMATCH[1]}"
+            minor="${BASH_REMATCH[2]}"
+            patch="${BASH_REMATCH[3]}"
+        else
+            echo "Invalid version format. Expected 'X.X.X'."
+            exit 1
+        fi
+
+        # Bumps the version based on the input argument
+        case ${{ github.event.inputs.updateType }} in
+        major)
+            major=$((major + 1))
+            minor=0
+            patch=0
+            ;;
+        minor)
+            minor=$((minor + 1))
+            patch=0
+            ;;
+        patch)
+            patch=$((patch + 1))
+            ;;
+        *)
+            echo "Usage: $0 [--major|--minor|--patch]"
+            echo "        --major: Bump the major version."
+            echo "        --minor: Bump the minor version."
+            echo "        --patch: Bump the patch version."
+            exit 1
+            ;;
+        esac
+
+        # Defines the updated tag and adds it to the GITHUB_ENV
+        new_tag="${major}.${minor}.${patch}"
+        echo "new_tag=$new_tag" >> $GITHUB_ENV
+    
+    - name: Create the release
+      run: |
+        gh release create "$new_tag" --generate-notes
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

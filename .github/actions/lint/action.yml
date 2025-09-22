@@ -31,14 +31,13 @@ inputs:
     description: Reports the lint errors in a PR comment.
     type: boolean
     default: false
-  build-directory:
+  config-build-directory:
     description: >
-      A custom build directory used to store the package used to edit and load the SPMGraphConfig.
-      It defaults to a temporary directory and it must be set in CI.
-
-      - Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
-
-      - Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
     required: true
   
   # TODO: Support danger as option for PR comment, requires making it a Danger plugin
@@ -49,7 +48,7 @@ runs:
     - id: lint_dependency_graph
       name: Run spmgraph lint
       run: |
-        spmgraph lint ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.strict == 'true' && '--strict' || '' }} --output lint_output --build-directory ${{ inputs.build-directory }}
+        spmgraph lint ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.strict == 'true' && '--strict' || '' }} --output lint_output --config-build-directory ${{ inputs.config-build-directory }}
       shell: /bin/bash -e {0}
 
     - name: Write to workflow job summary
