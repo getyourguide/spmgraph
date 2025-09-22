@@ -32,7 +32,7 @@ struct TestsArguments: ParsableArguments {
     name: [.customLong("baseBranch"), .customLong("branch"), .short],
     help: "Base branch to compare the changes against"
   )
-  var baseBranch: String?
+  var baseBranch: String = "main"
 
   @Option(
     name: [.customLong("output"), .customLong("outputMode"), .short],
@@ -40,6 +40,9 @@ struct TestsArguments: ParsableArguments {
       "The output mode. Options are: \(SPMGraphTests.OutputMode.allCases.map(\.rawValue).joined(separator: ", "))"
   )
   var outputMode: SPMGraphTests.OutputMode = .textDump
+
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 
   // TODO: Review if gitDir options is needed - generally git is in the root dir of the root Package
 }
@@ -61,7 +64,7 @@ struct Tests: AsyncParsableCommand {
     let library = try SPMGraphTests(
       input: SPMGraphTestsInput(
         spmPackageDirectory: arguments.common.spmPackageDirectory,
-        buildDirectory: arguments.common.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         excludedSuffixes: arguments.common.excludedSuffixes,
         changedFiles: arguments.changedFiles,
         baseBranch: arguments.baseBranch,

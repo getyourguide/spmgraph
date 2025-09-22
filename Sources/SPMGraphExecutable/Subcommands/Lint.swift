@@ -41,12 +41,17 @@ struct LintArguments: ParsableArguments {
       "The number of allowed warnings for the strict mode. note: It can be useful to **bypass the strict mode in specific scenarios**. `The default is zero`."
   )
   public var expectedWarningsCount: UInt = 0
+
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 }
 
 struct Lint: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
-    abstract:
-      "Lints your Package.swift dependency graph and uncovers configuration issues. Arguments take precedence over the matching `SPMGraphConfig.swift` options.",
+    abstract: """
+    Lints your Package.swift dependency graph and uncovers configuration issues. Arguments take precedence over the matching `SPMGraphConfig.swift` options.
+    **Note**: It requires setting up your spmgraph configuration first; for that run `spmgraph config` to define your lint rules, and then load them using `spmgraph load`.
+    """,
     discussion: """
         Run checks on a given Package.swift and raises configuration issues and potential optimisations
         that otherwise would be bubbled up by the build system later on.
@@ -60,7 +65,7 @@ struct Lint: AsyncParsableCommand {
     let library = try SPMGraphLint(
       input: SPMGraphLintInput(
         spmPackageDirectory: arguments.common.spmPackageDirectory,
-        buildDirectory: arguments.common.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         excludedSuffixes: arguments.common.excludedSuffixes,
         isStrict: arguments.strict,
         verbose: arguments.common.verbose,

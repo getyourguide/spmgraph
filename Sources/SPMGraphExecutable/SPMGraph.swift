@@ -37,18 +37,21 @@ struct SPMGraphArguments: ParsableArguments {
     help: "Show extra logging for troubleshooting purposes."
   )
   var verbose: Bool = false
+}
 
+struct SPMGraphConfigArguments: ParsableArguments {
   @Option(
+    name: [.long, .customLong("build-dir"), .customShort("d")],
     help: """
-      A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-      It defaults to a temporary directory.
-
-      Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
-
-      Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory, which works consistently for local runs.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
       """
   )
-  var buildDirectory: String?
+  var configBuildDirectory: String?
 }
 
 @main
@@ -60,7 +63,7 @@ struct SPMGraph: AsyncParsableCommand {
       """,
     version: "1.0.0",
     subcommands: [
-      Edit.self,
+      Config.self,
       Load.self,
       Tests.self,
       Lint.self,

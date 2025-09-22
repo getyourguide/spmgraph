@@ -27,14 +27,14 @@ import SPMGraphDescriptionInterface
 public struct SPMGraphTestsInput {
   /// "Directory path of Package.swift file"
   let spmPackageDirectory: AbsolutePath
-  /// A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-  let buildDirectory: AbsolutePath
+  /// A custom build directory for the package used to edit and load the SPMGraphConfig.
+  let configBuildDirectory: AbsolutePath
   /// Comma separated array of suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
   let excludedSuffixes: [String]
   /// Optional list of changed files. Otherwise git versioning is used
   let changedFiles: [String]
   /// Base branch to compare the changes against
-  let baseBranch: String?
+  let baseBranch: String
   /// The output mode
   let outputMode: SPMGraphTests.OutputMode  // TODO: Check if it make sense in the SPMGraphConfig fle
   /// Show extra logging for troubleshooting purposes
@@ -43,15 +43,15 @@ public struct SPMGraphTestsInput {
   /// Makes an instance of ``SPMGraphMapInput``
   public init(
     spmPackageDirectory: String,
-    buildDirectory: String?,
+    configBuildDirectory: String?,
     excludedSuffixes: [String],
     changedFiles: [String],
-    baseBranch: String?,
+    baseBranch: String,
     outputMode: SPMGraphTests.OutputMode,
     verbose: Bool
   ) throws {
     self.spmPackageDirectory = try AbsolutePath.packagePath(spmPackageDirectory)
-    self.buildDirectory = try AbsolutePath.buildDirectory(buildDirectory)
+    self.configBuildDirectory = try AbsolutePath.configBuildDirectory(configBuildDirectory)
     self.excludedSuffixes = excludedSuffixes
     self.changedFiles = changedFiles
     self.baseBranch = baseBranch
@@ -85,21 +85,16 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
   private let packageLoader: PackageLoader
   private let gitClient: GitClient
   private let system: SystemProtocol
-  private let config: SPMGraphConfig
+  // Optional, so that users can leverage selective testing without the need to setup their own `SPMGraphConfig`
+  private let config: SPMGraphConfig?
   private let input: SPMGraphTestsInput
 
-  private var baseBranch: String {
-    if let baseBranch = input.baseBranch {
-      return baseBranch
-    }
-    return config.tests.baseBranch
-  }
-
   private var excludedSuffixes: [String] {
+    // it defaults to the command set value, otherwise it falls back to the `SPMGraphConfig` setting
     if !input.excludedSuffixes.isEmpty {
       return input.excludedSuffixes
     } else {
-      return config.excludedSuffixes
+      return config?.excludedSuffixes ?? []
     }
   }
 
@@ -124,7 +119,7 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
     self.packageLoader = packageLoader
     self.gitClient = gitClient
     self.system = system
-    self.config = try configLoader.load(buildDirectory: input.buildDirectory)
+    self.config = try? configLoader.load(buildDirectory: input.configBuildDirectory)
     self.input = input
   }
 
@@ -137,7 +132,7 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
     // check changed files and return in case there are none
     let changedFiles: [AbsolutePath]
     if input.changedFiles.isEmpty {
-      changedFiles = try gitClient.listChangedFiles(baseBranch)
+      changedFiles = try gitClient.listChangedFiles(input.baseBranch)
         .map(AbsolutePath.init(validating:))
     } else {
       let changedFilesString = input.changedFiles

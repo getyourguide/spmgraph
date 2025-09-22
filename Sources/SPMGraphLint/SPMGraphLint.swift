@@ -27,8 +27,8 @@ import SPMGraphDescriptionInterface
 public struct SPMGraphLintInput {
   /// "Directory path of Package.swift file"
   let spmPackageDirectory: AbsolutePath
-  /// A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-  let buildDirectory: AbsolutePath
+  /// A custom build directory for the package used to edit and load the SPMGraphConfig.
+  let configBuildDirectory: AbsolutePath
   /// Comma separated array of suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
   let excludedSuffixes: [String]
   /// Fails on warnings
@@ -44,7 +44,7 @@ public struct SPMGraphLintInput {
   /// Makes an instance of ``SPMGraphLintInput``
   public init(
     spmPackageDirectory: String,
-    buildDirectory: String?,
+    configBuildDirectory: String?,
     excludedSuffixes: [String],
     isStrict: Bool,
     verbose: Bool,
@@ -52,7 +52,7 @@ public struct SPMGraphLintInput {
     outputFilePath: String?
   ) throws {
     self.spmPackageDirectory = try AbsolutePath.packagePath(spmPackageDirectory)
-    self.buildDirectory = try AbsolutePath.buildDirectory(buildDirectory)
+    self.configBuildDirectory = try AbsolutePath.configBuildDirectory(configBuildDirectory)
     self.excludedSuffixes = excludedSuffixes
     self.isStrict = isStrict
     self.verbose = verbose
@@ -121,7 +121,7 @@ public final class SPMGraphLint: SPMGraphLintProtocol {
     input: SPMGraphLintInput
   ) throws {
     self.packageLoader = packageLoader
-    self.config = try configLoader.load(buildDirectory: input.buildDirectory)
+    self.config = try configLoader.load(buildDirectory: input.configBuildDirectory)
     self.system = system
     self.input = input
   }

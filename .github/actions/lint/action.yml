@@ -1,0 +1,74 @@
+name: 'spmgraph lint'
+description: 'Lints the dependency graph of a local Package.swift'
+inputs:
+  package-directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  excluded-suffixes:
+    description: Comma separated suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
+    required: false
+    default: ''
+  strict:
+    description: Errors out on warnings and fail the check.
+    type: boolean
+    default: false
+  adds-to-summary: 
+    description: Reports the lint errors in the action summary.
+    type: boolean
+    default: true
+  summary-limit:
+    description: |
+      The maximum number of characters to include in the summary. Needed for the lint output to appear in the summary.
+      GitHub Actions summary has a limit of 1mb and around 65k characters.
+      See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#step-isolation-and-limits"
+    type: number
+    default: 50000
+  adds-pr-comment: 
+    description: Reports the lint errors in a PR comment.
+    type: boolean
+    default: false
+  build-directory:
+    description: >
+      A custom build directory used to store the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory and it must be set in CI.
+
+      - Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
+
+      - Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+    required: true
+  
+  # TODO: Support danger as option for PR comment, requires making it a Danger plugin
+
+runs:
+  using: 'composite'
+  steps:
+    - id: lint_dependency_graph
+      name: Run spmgraph lint
+      run: |
+        spmgraph lint ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.strict == 'true' && '--strict' || '' }} --output lint_output --build-directory ${{ inputs.build-directory }}
+      shell: /bin/bash -e {0}
+
+    - name: Write to workflow job summary
+      if: ${{ inputs.adds-to-summary == 'true' }}
+      run: |
+        lint_summary=$'# spmgraph lint\n## Results\n'
+        echo "$lint_summary" >> $GITHUB_STEP_SUMMARY
+        
+        # Limit the output characters so it's more likely that it appears in the summary
+        cat $GITHUB_WORKSPACE/lint_output.txt | head -c ${{ inputs.summary-limit }} >> $GITHUB_STEP_SUMMARY
+
+        output_warning=$'#### The output was truncated so that it does not surpass 1mb.'
+        echo "$output_warning" >> $GITHUB_STEP_SUMMARY
+      shell: /bin/bash -e {0}
+
+    - name: Rerport warnings as a PR comment
+      if: ${{ inputs.adds-pr-comment == 'true' }}
+      continue-on-error: true # Do not fail the workflow if the comment fails or if not a PR
+      uses: thollander/actions-comment-pull-request@v3.0.1
+      with:
+        file-path: /Users/administrator/runner/_work/iOS/iOS/lint_output.txt
+        comment-tag: lint-report # the same across runs, which makes it possible to update the comment

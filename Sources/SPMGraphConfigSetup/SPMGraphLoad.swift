@@ -26,19 +26,19 @@ import Foundation
 public struct SPMGraphLoadInput {
   /// Directory path of the `SPMGraphConfig.swift` file, which is the same as the `Package.swift` file
   let directory: AbsolutePath
-  /// A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-  let buildDirectory: AbsolutePath
+  /// A custom build directory for the package used to edit and load the SPMGraphConfig.
+  let configBuildDirectory: AbsolutePath
   /// Show extra logging for troubleshooting purposes
   let verbose: Bool
 
   /// Makes an instance of ``SPMGraphConfigInput``
   public init(
     directory: String,
-    buildDirectory: String?,
+    configBuildDirectory: String?,
     verbose: Bool
   ) throws {
     self.directory = try AbsolutePath.packagePath(directory)
-    self.buildDirectory = try AbsolutePath.buildDirectory(buildDirectory)
+    self.configBuildDirectory = try AbsolutePath.configBuildDirectory(configBuildDirectory)
     self.verbose = verbose
   }
 }
@@ -59,13 +59,13 @@ public protocol SPMGraphLoadProtocol {
 /// A type that loads a spmgraph configuration
 public final class SPMGraphLoad: SPMGraphLoadProtocol {
   private let input: SPMGraphLoadInput
-  private let buildDirectory: AbsolutePath
+  private let configBuildDirectory: AbsolutePath
 
   private var verbose: Bool {
     input.verbose
   }
 
-  private lazy var editPackageDirectory: AbsolutePath = buildDirectory.appending("spmgraph-config")
+  private lazy var editPackageDirectory: AbsolutePath = configBuildDirectory.appending("spmgraph-config")
   private lazy var dynamicLoadingFileDestination: AbsolutePath =
     editPackageDirectory
     .appending(component: "Sources")
@@ -75,7 +75,7 @@ public final class SPMGraphLoad: SPMGraphLoadProtocol {
 
   public init(input: SPMGraphLoadInput) throws(SPMGraphLoadError) {
     self.input = input
-    self.buildDirectory = input.buildDirectory
+    self.configBuildDirectory = input.configBuildDirectory
   }
 
   public func run() throws(SPMGraphLoadError) {

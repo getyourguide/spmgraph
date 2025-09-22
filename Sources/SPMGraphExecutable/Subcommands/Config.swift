@@ -20,7 +20,7 @@ import ArgumentParser
 import Foundation
 import SPMGraphConfigSetup
 
-struct EditArguments: ParsableArguments {
+struct ConfigArguments: ParsableArguments {
   @Flag(
     name: [.customLong("verbose"), .customShort("v")],
     help: "Show extra logging for troubleshooting purposes."
@@ -32,40 +32,31 @@ struct EditArguments: ParsableArguments {
   )
   var spmPackageDirectory: String
 
-  @Option(
-    help: """
-      A custom build directory used to build the package used to edit and load the SPMGraphConfig.
-      It defaults to a temporary directory.
-
-      Note: It enables controlling and caching the artifact that is generated from the user's `SPMGraphConfig` file.
-
-      Warning: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
-      """
-  )
-  var buildDirectory: String?
+  @OptionGroup
+  var config: SPMGraphConfigArguments
 }
 
-struct Edit: AsyncParsableCommand {
+struct Config: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract:
-      "Initializes or edit your spmgraph configuration, including your dependency graph rules written in Swift.",
+      "Init or edit your spmgraph configuration, including your dependency graph rules written in Swift.",
     discussion: """
       It looks for an `SPMGraphConfig.swift` file in the same directory as the `Package.swift` under analyzes. If there's none, it creates a fresh one from a template.
 
       Next, it generates a temporary package for editing your `SPMGraphConfig.swift`, where you customize multiple settings, from the expected warnings count to writing your own dependency graph rules in Swift code.
 
-      Once the `SPMGraphConfig.swift` is edited, your configuration is dynamic loaded into spmgraph and leveraged on all other commands.  
+      Once the `SPMGraphConfig.swift` is edited, your configuration is dynamically loaded into spmgraph and leveraged on all other commands.  
       """,
     version: "1.0.0"
   )
 
-  @OptionGroup var arguments: EditArguments
+  @OptionGroup var arguments: ConfigArguments
 
   mutating func run() async throws {
     let spmgraphEdit = try SPMGraphEdit(
       input: SPMGraphEditInput(
         spmPackageDirectory: arguments.spmPackageDirectory,
-        buildDirectory: arguments.buildDirectory,
+        configBuildDirectory: arguments.config.configBuildDirectory,
         verbose: arguments.verbose
       )
     )

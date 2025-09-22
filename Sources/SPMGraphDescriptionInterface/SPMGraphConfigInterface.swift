@@ -77,39 +77,19 @@ public struct SPMGraphConfig: Sendable {
     public static let `default`: Self = .init(isStrict: false)
   }
 
-  /// Configuration for selective testing.
-  ///
-  /// It maps modules that should be built and tests that should be run based on changed files.
-  public struct Tests: Sendable {
-    /// Base branch to compare the changes against.
-    public let baseBranch: String
-
-    /// Initializes the selective tests configuration.
-    /// - Parameter baseBranch: Base branch to compare the changes against. It `defaults` to `main`.
-    public init(baseBranch: String = "main") {
-      self.baseBranch = baseBranch
-    }
-  }
-
   public let lint: Lint
-  public let tests: Tests
   /// Comma separated array of suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'.
   public let excludedSuffixes: [String]
 
   /// Initializes a ``SPMGraphConfig``.
   /// - Parameters:
   ///   - lint: Configures the lint capability.
-  ///   - tests: Configures the selective tests capability.
-  ///   - excludedSuffixes: Comma separated array of suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'.
-  ///   - verbose: Show extra logging for troubleshooting purposes.
+  ///   - excludedSuffixes: **The default** comma separated array of suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'. The **value passed on commands** calls **take precedence over such default values**.
   public init(
     lint: Lint,
-    tests: Tests = .init(),
-    excludedSuffixes: [String] = [],
-    verbose: Bool = false
+    excludedSuffixes: [String] = []
   ) {
     self.lint = lint
-    self.tests = tests
     self.excludedSuffixes = excludedSuffixes
   }
 

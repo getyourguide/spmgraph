@@ -26,7 +26,7 @@ public enum SPMGraphConfigLoaderError: LocalizedError {
     switch self {
     case let .failedToLoadUserConfiguration(reason):
       """
-      Failed to load the `SPMGraphConfig.swift` file! Check if it exists and builds successfully by running `spmgraph edit`.
+      Failed to load the `SPMGraphConfig.swift` file! Check if it exists and builds successfully by running `spmgraph config`.
       If it does exist and builds well, run `spmgraph load` and wait for your configuration to be loaded into spmgraph.
       Reason: \(reason)
       """
