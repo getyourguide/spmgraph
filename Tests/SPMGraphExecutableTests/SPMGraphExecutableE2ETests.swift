@@ -46,7 +46,7 @@ struct SPMGraphExecutableE2ETests {
   ///
   /// - warning: For this to work it has to be run via the spmgraph testplan, where the Address Sanitizer is enabled,
   /// which works around potential memory crashes with graphviz in debug
-  @Test(.enabled(if: ProcessInfo.isSpmgraphTestPlan || ProcessInfo.isCI))
+  @Test(.enabled(if: ProcessInfo.isSpmgraphTestPlan))
   func visualize() async throws {
     // GIVEN
     let outputPath = try localFileSystem.tempDirectory
@@ -326,9 +326,6 @@ private extension SPMGraphExecutableE2ETests {
 private extension ProcessInfo {
   static var isSpmgraphTestPlan: Bool {
     processInfo.environment["TESTPLAN"] == "spmgraph"
-  }
-  static var isCI: Bool {
-    processInfo.environment["CI"] != nil
   }
 }
 
