@@ -1,0 +1,65 @@
+{
+  "configurations" : [
+    {
+      "id" : "5D7B73B1-8F29-45BF-A398-A3A25640665A",
+      "name" : "Test Scheme Action",
+      "options" : {
+
+      }
+    }
+  ],
+  "defaultOptions" : {
+    "addressSanitizer" : {
+      "enabled" : true
+    },
+    "codeCoverage" : false,
+    "commandLineArgumentEntries" : [
+      {
+        "argument" : "load",
+        "enabled" : false
+      },
+      {
+        "argument" : ""
+      },
+      {
+        "argument" : "edit",
+        "enabled" : false
+      },
+      {
+        "argument" : "visualize"
+      },
+      {
+        "argument" : "lint",
+        "enabled" : false
+      },
+      {
+        "argument" : "$path_to_your_package"
+      }
+    ],
+    "environmentVariableEntries" : [
+      {
+        "key" : "TESTPLAN",
+        "value" : "spmgraph"
+      },
+      {
+        "key" : "IS_RUNNING_TESTS",
+        "value" : "1"
+      }
+    ],
+    "targetForVariableExpansion" : {
+      "containerPath" : "container:",
+      "identifier" : "spmgraph",
+      "name" : "spmgraph"
+    }
+  },
+  "testTargets" : [
+    {
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SPMGraphExecutableTests",
+        "name" : "SPMGraphExecutableTests"
+      }
+    }
+  ],
+  "version" : 1
+}

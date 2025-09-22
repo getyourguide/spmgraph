@@ -24,7 +24,7 @@ struct TestsArguments: ParsableArguments {
 
   @Option(
     name: [.customLong("files"), .customLong("changedFiles")],
-    help: "Optional list of changed files. Otherwise git versioning is used"
+    help: "Optional list of changed files. Otherwise git versioning is used. It supports both absolute and relative paths"
   )
   var changedFiles: [String] = []  // TODO: Change to AbsolutePath
 
