@@ -40,6 +40,10 @@
       {
         "key" : "TESTPLAN",
         "value" : "spmgraph"
+      },
+      {
+        "key" : "IS_RUNNING_TESTS",
+        "value" : "1"
       }
     ],
     "targetForVariableExpansion" : {
