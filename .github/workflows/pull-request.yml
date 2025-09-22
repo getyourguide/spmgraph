@@ -29,7 +29,11 @@ jobs:
       timeout-minutes: 2
     
     - name: Build spmgraph for Xcode 16.4
-      run: swift build
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild build -scheme spmgraph -destination 'platform=macOS' | xcbeautify
+      timeout-minutes: 4
+
+    - name: Run tests on Xcode 16.4
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild test -scheme spmgraph -destination 'platform=macOS' | xcbeautify
       timeout-minutes: 4
 
     - name: Select Xcode 26.0 toolchain
@@ -39,5 +43,5 @@ jobs:
       timeout-minutes: 2
 
     - name: Build spmgraph for Xcode 26.0
-      run: swift build
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild build -scheme spmgraph -destination 'platform=macOS' | xcbeautify
       timeout-minutes: 4

@@ -102,6 +102,10 @@ struct SPMGraphExecutableE2ETests {
     )
 
     // THEN
+
+    // Await for the package to be created and loaded
+    try await Task.sleep(for: .seconds(2))
+
     #expect(
       localFileSystem.exists(.configPackagePath),
       "It creates the config package in the buildDir"
@@ -148,6 +152,9 @@ struct SPMGraphExecutableE2ETests {
 
     // THEN
 
+    // Await for the package to be created and loaded
+    try await Task.sleep(for: .seconds(2))
+
     // It creates the config package in the buildDir
     #expect(localFileSystem.exists(.configPackagePath))
     #expect(
@@ -181,6 +188,7 @@ struct SPMGraphExecutableE2ETests {
       """
     try stubUserConfigFile(with: updatedConfigContent)
 
+    // Ensure the file is updated
     try await Task.sleep(for: .seconds(1))
 
     // THEN
@@ -211,11 +219,14 @@ struct SPMGraphExecutableE2ETests {
     createUserConfigFile()
     try stubUserConfigFile()
 
+    // Ensure the file is updated
+    try await Task.sleep(for: .seconds(1))
+
     let buildDir = try localFileSystem.tempDirectory
       .appending(component: "buildDir")
 
     try runToolProcess(
-      command: "load \(AbsolutePath.fixturePackagePath) -d \(buildDir)",
+      command: "load \(AbsolutePath.fixturePackagePath) -d \(buildDir) --verbose",
       waitForExit: true
     )
     assertProcess()
@@ -302,10 +313,6 @@ private extension SPMGraphExecutableE2ETests {
       at: .fixturePackagePath,
       files: "SPMGraphConfig.swift"
     )
-
-    if !localFileSystem.exists(.userConfigFilePath) {
-      Issue.record("Missing SPMGraphConfig.swift fixture file")
-    }
   }
 
   func stubUserConfigFile(with content: String = .userConfigStub) throws {
@@ -313,6 +320,10 @@ private extension SPMGraphExecutableE2ETests {
       .userConfigFilePath,
       string: content
     )
+
+    if !localFileSystem.exists(.userConfigFilePath) {
+      Issue.record("Missing SPMGraphConfig.swift fixture file")
+    }
   }
 }
 
