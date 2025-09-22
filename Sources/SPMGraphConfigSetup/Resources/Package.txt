@@ -20,7 +20,7 @@ let package = Package(
     // TODO: Change it to HTTP when made public
     .package(
       url: "git@github.com:getyourguide/spmgraph.git",
-      branch: "main"
+      revision: "bda3a77facf780f921bab267628ce1c36afaadb1"
     ),
     
     // TODO: Review which tag / Swift release to use
