@@ -70,7 +70,7 @@ public final class SPMGraphLoad: SPMGraphLoadProtocol {
     editPackageDirectory
     .appending(component: "Sources")
     .appending(component: "SPMGraphConfig")
-    .appending(component: "DoNotEdit_DynamicLoading")
+    .appending(component: "_DoNotEdit_DynamicLoading")
     .appending(extension: "swift")
 
   public init(input: SPMGraphLoadInput) throws(SPMGraphLoadError) {
@@ -89,6 +89,8 @@ public final class SPMGraphLoad: SPMGraphLoadProtocol {
 private extension SPMGraphLoad {
   func load(userConfigFile: AbsolutePath) throws(SPMGraphLoadError) {
     print("Loading your SPMGraphConfig.swift into spmgraph... please await")
+
+    defer { try? removeDynamicLoadingFile() }
 
     try includeDynamicLoadingFile()
 
@@ -115,8 +117,6 @@ private extension SPMGraphLoad {
       )
     }
 
-    defer { try? removeDynamicLoadingFile() }
-
     print("Finished loading")
   }
 
@@ -124,7 +124,7 @@ private extension SPMGraphLoad {
     do {
       guard
         let dynamicLoadingTemplateURL = Bundle.module.url(
-          forResource: "Resources/DoNotEdit_DynamicLoading",
+          forResource: "Resources/_DoNotEdit_DynamicLoading",
           withExtension: "txt"
         )
       else {
