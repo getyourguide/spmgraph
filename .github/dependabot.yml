@@ -1,37 +1,52 @@
 version: 2
 updates:
-  - package-ecosystem: swift
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "weekly"
-      day: "monday"
-      time: "07:00"
-      timezone: "Europe/Berlin"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-    groups:
-      swift-minor-patch:
-        update-types: ["minor", "patch"]
-        patterns: ["*"]
-    commit-message:
-      prefix: "CI (dependabot)"
-    labels: ["dependencies", "swiftpm"]
-  
-  - package-ecosystem: "github-actions"
-    directory: "/"
-    schedule:
-      interval: "weekly"
-      day: "monday"
+      interval: weekly
+      day: monday
       time: "07:15"
-      timezone: "Europe/Berlin"
-    ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-    groups:
-      gha-minor-patch:
-        update-types: ["minor", "patch"]
-        patterns: ["*"]
+      timezone: Europe/Berlin
     commit-message:
-      prefix: "CI (dependabot)"
-    labels: ["dependencies", "github-actions"]
+      prefix: CI (dependabot)
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    groups:
+      01_gha-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+    labels:
+      - dependencies
+      - github-actions
+    cooldown:
+      default-days: 10
+      exclude:
+        - getyourguide/*
+  - package-ecosystem: swift
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Berlin
+    commit-message:
+      prefix: CI (dependabot)
+    ignore:
+      - dependency-name: '*'
+        update-types:
+          - version-update:semver-major
+    groups:
+      01_swift-minor-patch:
+        patterns:
+          - '*'
+        update-types:
+          - minor
+          - patch
+    labels:
+      - dependencies
+      - swiftpm
