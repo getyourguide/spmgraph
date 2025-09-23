@@ -41,6 +41,13 @@ struct TestsArguments: ParsableArguments {
   )
   var outputMode: SPMGraphTests.OutputMode = .textDump
 
+  @Flag(
+    name: [.customLong("experimentalUITest"), .long],
+    help:
+      "Warning: This is an experimental flag, use it with caution! Enables support for including UITest targets on selecting testing. It looks for a `uiTestsDependencies.json` in the temporary directory, reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run."
+  )
+  var experimentalUITestTargets: Bool = false
+
   @OptionGroup
   var config: SPMGraphConfigArguments
 
@@ -69,6 +76,7 @@ struct Tests: AsyncParsableCommand {
         changedFiles: arguments.changedFiles,
         baseBranch: arguments.baseBranch,
         outputMode: arguments.outputMode,
+        experimentalUITestTargets: arguments.experimentalUITestTargets,
         verbose: arguments.common.verbose
       )
     )
