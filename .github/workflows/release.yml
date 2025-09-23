@@ -1,5 +1,5 @@
 name: Release
-description: Release a new version of spmgraph. It's inpired by the internal https://github.com/getyourguide/actions/tree/main/semver-release.
+description: Release a new version of spmgraph. The internal https://github.com/getyourguide/actions/tree/main/semver-release inspires it.
 on:
   workflow_dispatch:
     inputs:
@@ -12,6 +12,10 @@ on:
             - patch
             - minor
             - major
+      version:
+        description: 'Optionally set the version manually'
+        type: string
+        required: false
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
@@ -33,12 +37,14 @@ jobs:
       timeout-minutes: 2
 
     - name: Get the latest release tag
+      if: ${{ inputs.version == '' || inputs.version == null }}
       run: |
         git fetch --prune --prune-tags
         latest_tag=$(git tag --sort=committerdate | tail -1)
         echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
     - name: Bump version
+      if: ${{ inputs.version == '' || inputs.version == null }}
       run: |
         # Read the latest tag from the GITHUB_ENV and extract the values from it
         latest_tag=${{ env.latest_tag }}
@@ -77,6 +83,10 @@ jobs:
         # Defines the updated tag and adds it to the GITHUB_ENV
         new_tag="${major}.${minor}.${patch}"
         echo "new_tag=$new_tag" >> $GITHUB_ENV
+
+    - name: Set the new tag based on the input
+      if: ${{ inputs.version != '' && inputs.version != null }}
+      run: echo "new_tag=${{ inputs.version }}" >> $GITHUB_ENV
     
     - name: Create the release
       run: |
