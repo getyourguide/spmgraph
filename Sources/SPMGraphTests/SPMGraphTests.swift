@@ -38,7 +38,7 @@ public struct SPMGraphTestsInput {
   /// The output mode
   let outputMode: SPMGraphTests.OutputMode  // TODO: Check if it make sense in the SPMGraphConfig fle
   /// Enables support for including UITest targets on selecting testing. It looks for a `uiTestsDependencies.json` in the temporary directory,
-  /// reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run."
+  /// reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run.
   ///
   /// - warning: This is an experimental flag, use it with caution!
   let experimentalUITestTargets: Bool
@@ -198,10 +198,14 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
         .appending(component: "uiTestsDependencies")
         .appending(extension: "json")
 
-      print(">>> file path \(uiTestsDependenciesFilePath)")
+      if input.verbose {
+        try system.echo("Looking for the UI tests dependencies file at: \(uiTestsDependenciesFilePath)")
+      }
 
       if localFileSystem.exists(uiTestsDependenciesFilePath) {
-        print(">>> file exists")
+        if input.verbose {
+          try system.echo("Found the UI tests dependencies file at: \(uiTestsDependenciesFilePath)")
+        }
 
         try localFileSystem.readFileContents(uiTestsDependenciesFilePath)
           .withData { data in
