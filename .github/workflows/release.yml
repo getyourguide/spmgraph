@@ -37,14 +37,14 @@ jobs:
       timeout-minutes: 2
 
     - name: Get the latest release tag
-      if: ${{ inputs.version == '' || inputs.version == null }}
+      if: ${{ !inputs.version }}
       run: |
         git fetch --prune --prune-tags
         latest_tag=$(git tag --sort=committerdate | tail -1)
         echo "latest_tag=$latest_tag" >> $GITHUB_ENV
 
     - name: Bump version
-      if: ${{ inputs.version == '' || inputs.version == null }}
+      if: ${{ !inputs.version }}
       run: |
         # Read the latest tag from the GITHUB_ENV and extract the values from it
         latest_tag=${{ env.latest_tag }}
@@ -85,7 +85,7 @@ jobs:
         echo "new_tag=$new_tag" >> $GITHUB_ENV
 
     - name: Set the new tag based on the input
-      if: ${{ inputs.version != '' && inputs.version != null }}
+      if: ${{ inputs.version }}
       run: echo "new_tag=${{ inputs.version }}" >> $GITHUB_ENV
     
     - name: Create the release
