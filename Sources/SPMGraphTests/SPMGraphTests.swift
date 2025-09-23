@@ -37,6 +37,11 @@ public struct SPMGraphTestsInput {
   let baseBranch: String
   /// The output mode
   let outputMode: SPMGraphTests.OutputMode  // TODO: Check if it make sense in the SPMGraphConfig fle
+  /// Enables support for including UITest targets on selecting testing. It looks for a `uiTestsDependencies.json` in the temporary directory,
+  /// reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run.
+  ///
+  /// - warning: This is an experimental flag, use it with caution!
+  let experimentalUITestTargets: Bool
   /// Show extra logging for troubleshooting purposes
   let verbose: Bool
 
@@ -48,6 +53,7 @@ public struct SPMGraphTestsInput {
     changedFiles: [String],
     baseBranch: String,
     outputMode: SPMGraphTests.OutputMode,
+    experimentalUITestTargets: Bool,
     verbose: Bool
   ) throws {
     self.spmPackageDirectory = try AbsolutePath.packagePath(spmPackageDirectory)
@@ -56,6 +62,7 @@ public struct SPMGraphTestsInput {
     self.changedFiles = changedFiles
     self.baseBranch = baseBranch
     self.outputMode = outputMode
+    self.experimentalUITestTargets = experimentalUITestTargets
     self.verbose = verbose
   }
 }
@@ -184,24 +191,75 @@ public final class SPMGraphTests: SSPMGraphTestsProtocol {
 
     // map tests modules that should run
     let testModulesToRun = mapTestmodules(for: affectedModules, package: package)
+    var inlineTestModulesNames = testModulesToRun.map(\.name).joined(separator: ",")
 
-    if testModulesToRun.isEmpty {
+    if input.experimentalUITestTargets {
+      let uiTestsDependenciesFilePath = try localFileSystem.tempDirectory
+        .appending(component: "uiTestsDependencies")
+        .appending(extension: "json")
+
+      if input.verbose {
+        try system.echo("Looking for the UI tests dependencies file at: \(uiTestsDependenciesFilePath)")
+      }
+
+      if localFileSystem.exists(uiTestsDependenciesFilePath) {
+        if input.verbose {
+          try system.echo("Found the UI tests dependencies file at: \(uiTestsDependenciesFilePath)")
+        }
+
+        try localFileSystem.readFileContents(uiTestsDependenciesFilePath)
+          .withData { data in
+            let uiTestModules = try JSONDecoder().decode(UITestsModulesMap.self, from: data)
+
+            let uiTestModulesToRun = uiTestModules.modules
+              .filter { target in
+                let allAffectedModules = (affectedModules + testModulesToRun).map(\.name)
+                return allAffectedModules.contains { moduleName in
+                  target.dependencies.contains(moduleName)
+                }
+              }
+              .map(\.name)
+
+            if !uiTestModulesToRun.isEmpty {
+              inlineTestModulesNames.append(",")
+              inlineTestModulesNames.append(uiTestModulesToRun.joined(separator: ","))
+            }
+          }
+      }
+    }
+
+    if inlineTestModulesNames.isEmpty {
       try system.echo(
         "No test modules to run"
       )
     } else {
+      let lineByLineModulesToRun = inlineTestModulesNames.replacingOccurrences(of: ",", with: "\n")
       try system.echo(
-        "The test modules to run are: \(testModulesToRun.map(\.name).joined(separator: "\n"))"
+        "The test modules to run are: \(lineByLineModulesToRun)"
       )
     }
 
-    try generateOutput(testModulesToRun: testModulesToRun, outputMode: input.outputMode)
+    try generateOutput(inlineTestModulesToRun: inlineTestModulesNames, outputMode: input.outputMode)
 
     return testModulesToRun
   }
 }
 
 // MARK: - Private
+
+private struct UITestsModulesMap: Decodable {
+  struct Module: Decodable {
+    let name: String
+    let dependencies: [String]
+
+    private enum Keys: String, CodingKey {
+      case name = "targetName"
+      case dependencies
+    }
+  }
+
+  let modules: [Module]
+}
 
 private extension SPMGraphTests {
   /// Maps and returns the modules that were affected by a set of changed files
@@ -288,20 +346,18 @@ private extension SPMGraphTests {
 
   /// A function that generates the output with tests to run
   /// - Parameters:
-  ///    - testModulesToRun: All modules which tests need to run
+  ///    - inlineTestModulesToRun: The name of all modules which tests need to run
   ///    - outputMode: Specifies the output mode
-  func generateOutput(testModulesToRun: [Module], outputMode: OutputMode) throws {
-    let inlineModuleNames = testModulesToRun.map(\.name).joined(separator: ",")
-
+  func generateOutput(inlineTestModulesToRun: String, outputMode: OutputMode) throws {
     switch outputMode {
     case .textDump:
-      try system.echo(inlineModuleNames)
+      try system.echo(inlineTestModulesToRun)
     case .textFile:
       let url = AbsolutePath.currentDir.asURL
       var fileURL = url.appendingPathComponent("output")
       fileURL = fileURL.appendingPathExtension("txt")
       do {
-        try inlineModuleNames.write(to: fileURL, atomically: true, encoding: .utf8)
+        try inlineTestModulesToRun.write(to: fileURL, atomically: true, encoding: .utf8)
         try system.echo(
           "✅ Successfully saved the formatted list of test modules to \(fileURL)"
         )
