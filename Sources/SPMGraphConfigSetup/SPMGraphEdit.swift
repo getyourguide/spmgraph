@@ -69,8 +69,12 @@ public final class SPMGraphEdit: SPMGraphEditProtocol {
     input.verbose
   }
 
-  private var shouldOpenEditPackage: Bool {
-    !ProcessInfo.isRunningTests && !ProcessInfo.isCI
+  /// Whether it's run to initialize/edit the user configuration or only create the edit project for then loading it into spmgraph
+  private var isInEditMode: Bool {
+    !ProcessInfo.isRunningTests && !isCI
+  }
+  private var isCI: Bool {
+    ProcessInfo.isCI
   }
 
   private lazy var editPackageDirectory: AbsolutePath = buildDirectory.appending("spmgraph-config")
@@ -119,18 +123,22 @@ public final class SPMGraphEdit: SPMGraphEditProtocol {
       spmPackageDirectory: input.spmPackageDirectory
     )
 
-    // Open the config edit package for editing
+    // Open the config edit package for editing and observe changes on it if needed
     try openEditPackage()
 
-    // Observe changes on the editing config file
+    guard !isCI else {
+      print("Skipping observing file changes in CI...")
+      return
+    }
+
     try await observeEditingConfigFile(updating: userConfigFile)
   }
 }
 
 private extension SPMGraphEdit {
   func openEditPackage() throws(SPMGraphEditError) {
-    guard shouldOpenEditPackage else {
-      print("Skipped opening the edit package in tests...")
+    guard isInEditMode else {
+      print("Skipped opening the edit package in tests or CI...")
       return
     }
 
