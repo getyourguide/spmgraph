@@ -21,6 +21,7 @@ import Core
 import Foundation
 import GraphViz
 import PackageModel
+import Tools
 
 // MARK: - Input
 
@@ -118,7 +119,7 @@ public final class SPMGraphVisualize: SPMGraphVisualizeProtocol {
       input.verbose
     )
 
-    try await generateDependencyGraphFile(package: package, input: input)
+    try generateDependencyGraphFile(package: package, input: input)
   }
 }
 
@@ -128,38 +129,19 @@ private extension SPMGraphVisualize {
   func generateDependencyGraphFile(
     package: Package,
     input: SPMGraphVisualizeInput
-  ) async throws {
+  ) throws {
     let graph = generateDependencyGraph(package: package, input: input)
+    let data = try graph.render(using: .dot, to: .png)
+    try data.write(to: input.outputFilePath.asURL)
 
-    try await withCheckedThrowingContinuation { continuation in
-      // N.B.: gvRenderData may crash in Debug with a bad pointer (e.g. 0x100000000) when copying to `Data`.
-      // Likely causes: C ABI mismatch, header/runtime mismatch, or concurrent use of a Graphviz context.
-      // Mitigations: Run in release mode where the memory layout is different or enable the AddressSanitizer, which can mask the issue.
-      graph.render(using: .dot, to: .png) { [weak self] result in
-        guard let self else { return }
-
-        switch result {
-        case let .success(data):
-          do {
-            try data.write(to: input.outputFilePath.asURL)
-
-            // Opens the generated graph unless running tests
-            if self.shouldOpenImage {
-              try self.system
-                .run(
-                  "open",
-                  input.outputFilePath.pathString,
-                  verbose: true
-                )
-            }
-            continuation.resume(returning: ())
-          } catch {
-            continuation.resume(throwing: error)
-          }
-        case let .failure(error):
-          continuation.resume(throwing: error)
-        }
-      }
+    // Opens the generated graph unless running tests
+    if self.shouldOpenImage {
+      try self.system
+        .run(
+          "open",
+          input.outputFilePath.pathString,
+          verbose: true
+        )
     }
   }
 
