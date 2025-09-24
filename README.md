@@ -1,6 +1,6 @@
 # spmgraph - SwiftPM dependency graph management
 
-[![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/pull-request.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/pull-request.yml)
+[![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml)
 [![Swift Package Manager](https://rawgit.com/jlyonsmith/artwork/master/SwiftPackageManager/swiftpackagemanager-compatible.svg)](https://swift.org/package-manager/)
 
 A CLI tool that **unlocks Swift dependency graphs**, giving you extra information and capabilities.
