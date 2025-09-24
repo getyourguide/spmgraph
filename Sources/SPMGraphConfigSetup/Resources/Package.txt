@@ -18,9 +18,10 @@ let package = Package(
   ],
   dependencies: [
     // TODO: Change it to HTTP when made public
+    // TODO: Automate updating the revision based on the matching release
     .package(
       url: "git@github.com:getyourguide/spmgraph.git",
-      exact: "0.0.5"
+      revision: "f70a8f6d35ac40e4875d1822c36ddc15e0ca27ab"
     ),
     
     // TODO: Review which tag / Swift release to use
