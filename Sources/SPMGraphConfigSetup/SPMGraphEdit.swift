@@ -69,6 +69,10 @@ public final class SPMGraphEdit: SPMGraphEditProtocol {
     input.verbose
   }
 
+  private var shouldOpenEditPackage: Bool {
+    !ProcessInfo.isRunningTests && !ProcessInfo.isCI
+  }
+
   private lazy var editPackageDirectory: AbsolutePath = buildDirectory.appending("spmgraph-config")
   private lazy var editPackageSourcesDirectory =
     editPackageDirectory
@@ -125,7 +129,7 @@ public final class SPMGraphEdit: SPMGraphEditProtocol {
 
 private extension SPMGraphEdit {
   func openEditPackage() throws(SPMGraphEditError) {
-    guard !ProcessInfo.isRunningTests else {
+    guard shouldOpenEditPackage else {
       print("Skipped opening the edit package in tests...")
       return
     }

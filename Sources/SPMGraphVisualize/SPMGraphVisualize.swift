@@ -83,6 +83,10 @@ public final class SPMGraphVisualize: SPMGraphVisualizeProtocol {
   let packageLoader: PackageLoader
   let system: SystemProtocol
 
+  private var shouldOpenImage: Bool {
+    !ProcessInfo.isRunningTests && !ProcessInfo.isCI
+  }
+
   /// Makes an instance of ``SPMGraphVisualize``
   public convenience init() {
     self.init(packageLoader: .live)
@@ -131,15 +135,17 @@ private extension SPMGraphVisualize {
       // N.B.: gvRenderData may crash in Debug with a bad pointer (e.g. 0x100000000) when copying to `Data`.
       // Likely causes: C ABI mismatch, header/runtime mismatch, or concurrent use of a Graphviz context.
       // Mitigations: Run in release mode where the memory layout is different or enable the AddressSanitizer, which can mask the issue.
-      graph.render(using: .dot, to: .png) { [weak system] result in
+      graph.render(using: .dot, to: .png) { [weak self] result in
+        guard let self else { return }
+
         switch result {
         case let .success(data):
           do {
             try data.write(to: input.outputFilePath.asURL)
 
             // Opens the generated graph unless running tests
-            if !ProcessInfo.isRunningTests {
-              try system?
+            if self.shouldOpenImage {
+              try self.system
                 .run(
                   "open",
                   input.outputFilePath.pathString,
