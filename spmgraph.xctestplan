@@ -9,9 +9,6 @@
     }
   ],
   "defaultOptions" : {
-    "addressSanitizer" : {
-      "enabled" : true
-    },
     "codeCoverage" : false,
     "commandLineArgumentEntries" : [
       {

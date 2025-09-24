@@ -42,11 +42,7 @@ struct SPMGraphExecutableE2ETests {
     assertProcess()
   }
 
-  /// Tests the visualize feature
-  ///
-  /// - warning: For this to work it has to be run via the spmgraph testplan, where the Address Sanitizer is enabled,
-  /// which works around potential memory crashes with graphviz in debug
-  @Test(.enabled(if: ProcessInfo.isSpmgraphTestPlan))
+  @Test()
   func visualize() async throws {
     // GIVEN
     let outputPath = try localFileSystem.tempDirectory
@@ -81,7 +77,6 @@ struct SPMGraphExecutableE2ETests {
 
     // THEN
     assertProcess(
-      expectsError: true, // TODO: Review duplicate symbols error messages
       outputContains: outputMode == "textDump"
       ? "TargetBTests,TargetATests"
       : "saved the formatted list of test modules to"
