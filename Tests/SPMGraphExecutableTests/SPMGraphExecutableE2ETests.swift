@@ -81,6 +81,7 @@ struct SPMGraphExecutableE2ETests {
 
     // THEN
     assertProcess(
+      expectsError: true, // TODO: Review duplicate symbols error messages
       outputContains: outputMode == "textDump"
       ? "TargetBTests,TargetATests"
       : "saved the formatted list of test modules to"

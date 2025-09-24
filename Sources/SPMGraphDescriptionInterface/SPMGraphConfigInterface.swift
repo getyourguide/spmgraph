@@ -100,6 +100,11 @@ public struct SPMGraphConfig: Sendable {
 typealias Validate = (Package, _ excludedSuffixes: [String]) -> [LocalizedError]
 
 public extension Array where Element == SPMGraphConfig.Lint.Rule {
+  /// The default lint rules for users of the spmgraph lint functionality.
+  ///
+  /// - note: **Most default rules allow for customization**, i.e. `liveModuleLiveDependency` can be used
+  /// directly when setting up your `SPMGraphConfig.swift` and with a custom implementation of both the `isLiveModule` and
+  /// the `excludedDependencies` parameters.
   static let `default`: [SPMGraphConfig.Lint.Rule] = [
     .unusedDependencies,
     .liveModuleLiveDependency(),
@@ -108,8 +113,17 @@ public extension Array where Element == SPMGraphConfig.Lint.Rule {
 }
 
 public extension SPMGraphConfig.Lint.Rule {
+  /// A rule that checks for live modules that depend on other live modules, which shouldn't be allowed for a flat dependency graph.
+  ///
+  /// - note: A `Live Module` is an `Implementation module`, which carries heavy logic and transitive dependencies,
+  /// differently than an `Interface Module`, a lightweight module that doesn't bring concrete dependencies with it.
+  ///
+  /// - Parameters:
+  ///   - isLiveModule: A function that defines what a live module is. **By default** it checks for modules **suffixed with "Live".**
+  ///   - excludedDependencies: A list of Live Modules dependencies that are allowed.
   static func liveModuleLiveDependency(
-    isLiveModule: @Sendable @escaping (Module) -> Bool = \.isLiveModule
+    isLiveModule: @Sendable @escaping (Module) -> Bool = \.isLiveModule,
+    excludedDependencies: [String] = []
   ) -> Self {
     Self(
       id: "liveModuleLiveDependency",
@@ -128,6 +142,7 @@ public extension SPMGraphConfig.Lint.Rule {
             liveModule.dependencies
               .compactMap(\.module)
               .filter(\.isLiveModule == true)
+              .filter { !excludedDependencies.contains($0.name) }
               .map { dependency in
                 SPMGraphConfig.Lint.Error.liveModuleLiveDependency(
                   moduleName: liveModule.name,
@@ -142,6 +157,15 @@ public extension SPMGraphConfig.Lint.Rule {
     )
   }
 
+  /// A rule that checks for base and interface modules that depend on live modules, which shouldn't be allowed on a healthy dependency graph.
+  ///
+  /// - note: An `Interface Module` is a lightweight module that doesn't bring concrete dependencies with it,
+  /// while a `Base Module` is a foundational module, i.e. `NetworkingKit`, which shouldn't depend on higher level domains,
+  /// feature modules, and Live modules that brings heavy logic and dependencies.
+  ///
+  /// - Parameters:
+  ///   - isBaseModule: A function that defines what a base module is. **By default** it checks for **modules that aren't Live**.
+  ///   - isLiveModule: A function that defines what a live module is. **By default** it checks for modules **suffixed with "Live".**
   static func baseOrInterfaceModuleLiveDependency(
     isBaseModule: @Sendable @escaping (Module) -> Bool = { module in
       !module.isLiveModule && !module.canDependOnLive
@@ -180,6 +204,14 @@ public extension SPMGraphConfig.Lint.Rule {
     )
   }
 
+  /// A rule that checks for linked dependencies that aren't actually used.
+  ///
+  /// - note: It does blindly expects the target to match the product name, and doesn't yet consider the multiple targets that can
+  /// compose a product **(open improvement)**.
+  ///
+  /// - note: For `@_exported` usages, there will be an error in case only the exported module is used.
+  /// For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target there will be
+  /// a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
   static let unusedDependencies = Self(
     id: "unusedDependencies",
     name: "Unused linked dependencies",
@@ -235,7 +267,9 @@ public extension SPMGraphConfig.Lint.Rule {
       return errors
     }
   )
+}
 
+private extension SPMGraphConfig.Lint.Rule {
   static func findSwiftFiles(in directory: String) throws -> [String] {
     let enumerator = FileManager.default.enumerator(atPath: directory)
     var swiftFiles = [String]()
