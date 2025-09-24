@@ -142,6 +142,7 @@ public extension SPMGraphConfig.Lint.Rule {
             liveModule.dependencies
               .compactMap(\.module)
               .filter(\.isLiveModule == true)
+              .filter { !excludedDependencies.contains($0.name) }
               .map { dependency in
                 SPMGraphConfig.Lint.Error.liveModuleLiveDependency(
                   moduleName: liveModule.name,
