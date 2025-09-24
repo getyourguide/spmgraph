@@ -158,7 +158,7 @@ public extension SPMGraphConfig.Lint.Rule {
 
   /// A rule that checks for base and interface modules that depend on live modules, which shouldn't be allowed on a healthy dependency graph.
   ///
-  /// - note: An `Interface Module`is a lightweight module that doesn't bring concrete dependencies with it,
+  /// - note: An `Interface Module` is a lightweight module that doesn't bring concrete dependencies with it,
   /// while a `Base Module` is a foundational module, i.e. `NetworkingKit`, which shouldn't depend on higher level domains,
   /// feature modules, and Live modules that brings heavy logic and dependencies.
   ///
