@@ -22,4 +22,7 @@ public extension ProcessInfo {
   static var isRunningTests: Bool {
     processInfo.environment["IS_RUNNING_TESTS"] != nil
   }
+  static var isCI: Bool {
+    processInfo.environment["CI"] != nil
+  }
 }
