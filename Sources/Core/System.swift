@@ -35,6 +35,8 @@ public protocol SystemProtocol: AnyObject {
   func echo(
     _ command: String
   ) throws
+
+  static var env: [String: String] { get }
 }
 
 /// Implements the API to interact with the system shell

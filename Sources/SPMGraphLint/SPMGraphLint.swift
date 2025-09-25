@@ -133,10 +133,7 @@ public final class SPMGraphLint: SPMGraphLintProtocol {
       input.verbose
     )
 
-    let result = lintGraph(
-      package: package,
-      excludedSuffixes: excludedSuffixes
-    )
+    let result = lintGraph(package: package)
 
     if let outputFilePath = input.outputFilePath {
       try generateOutput(lintMessage: result.message, outputFilePath: outputFilePath)
@@ -156,7 +153,7 @@ private extension SPMGraphLint {
     let message: String
   }
 
-  func lintGraph(package: Package, excludedSuffixes: [String]) -> Result {
+  func lintGraph(package: Package) -> Result {
     var totalErrorsCount = 0
     var lintMessage = ""
 
@@ -186,13 +183,6 @@ private extension SPMGraphLint {
           terminator: "\n",
           lintMessage: &lintMessage
         )
-      } else if errors.count <= expectedWarningsCount {
-        printAndCollect(
-          "❇️ Found \(errors.count) issues, which is within expected warnings count of \(expectedWarningsCount)!",
-          color: .green,
-          terminator: "\n",
-          lintMessage: &lintMessage
-        )
       } else {
         printAndCollect(
           "Errors:",
@@ -218,7 +208,7 @@ private extension SPMGraphLint {
           lintMessage: &lintMessage
         )
         printAndCollect(
-          " Lets fix them, humans 🤖!",
+          " Lets fix it, humans 🤖!",
           color: .yellow,
           lintMessage: &lintMessage
         )
@@ -226,27 +216,48 @@ private extension SPMGraphLint {
     }
 
     printAndCollect("\n", lintMessage: &lintMessage)
-    printAndCollect(
-      "⚠️  Found a ",
-      color: .yellow,
-      terminator: "",
-      lintMessage: &lintMessage
-    )
-    printAndCollect(
-      "total of \(totalErrorsCount) errors ",
-      color: .yellow,
-      style: .bold,
-      terminator: "",
-      lintMessage: &lintMessage
-    )
-    printAndCollect(
-      "for all rules ran. Don't worry, everything is fixable!",
-      color: .yellow,
-      lintMessage: &lintMessage
-    )
+
+    let hasErrors = totalErrorsCount > 0
+    if hasErrors {
+      printAndCollect(
+        "⚠️  Found a ",
+        color: .yellow,
+        terminator: "",
+        lintMessage: &lintMessage
+      )
+      printAndCollect(
+        "total of \(totalErrorsCount) errors ",
+        color: .yellow,
+        style: .bold,
+        terminator: "",
+        lintMessage: &lintMessage
+      )
+      printAndCollect(
+        "for all rules ran. Don't worry, everything is fixable!",
+        color: .yellow,
+        lintMessage: &lintMessage
+      )
+    } else {
+      printAndCollect(
+        "No errors found! The dependency graph looks tidy ✨",
+        color: .green,
+        style: .bold,
+        terminator: "\n",
+        lintMessage: &lintMessage
+      )
+    }
+
+    // Write boolean result into file if running in the CI
+    if System.env["CI"] != nil {
+      let fileURL = AbsolutePath.currentDir
+        .appending(".spmgraph_lint_result")
+        .appending(extension: "txt")
+        .asURL
+      try? "\(hasErrors)".write(to: fileURL, atomically: true, encoding: .utf8)
+    }
 
     return Result(
-      hasErrors: totalErrorsCount > expectedWarningsCount,
+      hasErrors: hasErrors,
       message: lintMessage
     )
   }
