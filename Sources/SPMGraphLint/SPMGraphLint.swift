@@ -253,7 +253,11 @@ private extension SPMGraphLint {
         .appending(".spmgraph_lint_result")
         .appending(extension: "txt")
         .asURL
-      try? "\(hasErrors)".write(to: fileURL, atomically: true, encoding: .utf8)
+      do {
+        try "\(hasErrors)".write(to: fileURL, atomically: true, encoding: .utf8)
+      } catch {
+        print("❌ Failed to write CI result file at \(fileURL): \(error)")
+      }
     }
 
     return Result(
