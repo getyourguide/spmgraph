@@ -50,7 +50,7 @@ runs:
       run: |
         spmgraph lint ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.strict == 'true' && '--strict' || '' }} --output lint_output ${{ inputs.config-build-directory && '--config-build-directory ${{ inputs.config-build-directory }}' || '' }}
 
-        # Set booleaan output to indicate if lint failed or not
+        # Set boolean output to indicate if lint failed or not
         echo "lint_failed=$(cat $GITHUB_WORKSPACE/.spmgraph_lint_result.txt)" >> $GITHUB_OUTPUT
       shell: /bin/bash -e {0}
 
