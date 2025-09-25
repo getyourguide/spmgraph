@@ -61,7 +61,7 @@ struct SPMGraph: AsyncParsableCommand {
     discussion: """
       Visualization, Selective testing, and Linting of a Package.swift dependency graph
       """,
-    version: "0.0.7",
+    version: "0.0.8",
     subcommands: [
       Config.self,
       Load.self,
