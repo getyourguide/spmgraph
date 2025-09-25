@@ -208,7 +208,7 @@ private extension SPMGraphLint {
           lintMessage: &lintMessage
         )
         printAndCollect(
-          " Lets fix it, humans 🤖!",
+          " Let's fix it, humans 🤖!",
           color: .yellow,
           lintMessage: &lintMessage
         )
