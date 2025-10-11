@@ -19,11 +19,11 @@ on:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 jobs:        
-  build_and_tests:
-    name: Build and run tests
+  release:
+    name: Release a new version
     runs-on: [self-hosted, java-small] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
         id-token: write
@@ -33,7 +33,7 @@ jobs:
 
     steps:
     - name: Check out repository
-      uses: actions/checkout@v4
+      uses: actions/checkout@v5
       timeout-minutes: 2
 
     - name: Get the latest release tag
