@@ -5,12 +5,12 @@
 
 A CLI tool that **unlocks Swift dependency graphs**, giving you extra information and capabilities.
 <br>
-With it, you can visualize your dependency graph, run selective testing, and enforce architectural rules for optimal modular setups.
+With it, you can visualize your dependency graph, run selective tests, and enforce architectural rules for an optimal modular setup.
 <br>
 _spmgraph_ can be run for any local `Package.swift`.
 
 ## Visualize
-Generate an image with a visual representation of your dependency. **Open the map!**
+Generate an image that visually represents your dependency graph. **Open the map!**
 
 ```bash
 spmgraph visualize <package-path> --help
@@ -147,7 +147,7 @@ mint install getyourguide/spmgraph
 * For optimal build times, make sure `~/.mint/bin/spmgraph` is cached on your CI runner.
 
 ## Acknowledgments
-- Inspired by the work that the [Tuist](https://tuist.dev/) team does for the Apple developers community and their focus on leveraging the dependency graph to provide amazing features for engineers. Also, a source of inspiration for our shell abstraction layer. 
+- Inspired by the work that the [Tuist](https://tuist.dev/) team does for the Apple developers community and their focus on leveraging the dependency graph to provide amazing features for engineers. Also, a source of inspiration for our shell abstraction layer.
 
 ## Open roadmap
 - [ ] Cover the core logic of Lint, Map, and Visualize libs with tests
@@ -157,3 +157,6 @@ mint install getyourguide/spmgraph
 Ideas
 - [ ] Add fix-it suggestion to lint errors
 - [ ] Create Danger plugin for the linter functionality
+
+## Contributing
+Check the [CONTRIBUTING.md](./CONTRIBUTING.md) file.
