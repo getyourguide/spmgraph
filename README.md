@@ -1,11 +1,13 @@
-# spmgraph - SwiftPM dependency graph management
+# `spmgraph`: SwiftPM dependency graphs supercharged ⚡
 
 [![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml)
+![Toolchain](https://img.shields.io/badge/Swift-6.0+%20%7C%20Xcode%2016%2B-orange?logo=swift&logoColor=white)
+[![Mint](https://img.shields.io/badge/Mint-getyourguide%2Fspmgraph-40c8a7?logo=leaf&logoColor=white)](https://github.com/getyourguide/spmgraph#installation)
 [![Swift Package Manager](https://rawgit.com/jlyonsmith/artwork/master/SwiftPackageManager/swiftpackagemanager-compatible.svg)](https://swift.org/package-manager/)
 
 A CLI tool that **unlocks Swift dependency graphs**, giving you extra information and capabilities.
 <br>
-With it, you can visualize your dependency graph, run selective tests, and enforce architectural rules for an optimal modular setup.
+With it, you can **visualize your dependency graph**, run **selective tests**, and **enforce architectural rules** for an optimal modular setup.
 <br>
 _spmgraph_ can be run for any local `Package.swift`.
 
