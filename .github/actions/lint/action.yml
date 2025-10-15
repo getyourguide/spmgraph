@@ -55,7 +55,7 @@ runs:
       shell: /bin/bash -e {0}
 
     - name: Write to workflow job summary
-      if: always() && ${{ inputs.adds-to-summary == 'true' }}
+      if: ${{ always() && inputs.adds-to-summary == 'true' }}
       run: |
         lint_summary=$'# spmgraph lint\n## Results\n'
         echo "$lint_summary" >> $GITHUB_STEP_SUMMARY
@@ -68,7 +68,7 @@ runs:
       shell: /bin/bash -e {0}
 
     - name: Report warnings as a PR comment
-      if: always() && ${{ inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'true' }}
+      if: ${{ always() && inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'true' }}
       continue-on-error: true # Do not fail the workflow if the comment fails or if not a PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
@@ -76,7 +76,7 @@ runs:
         comment-tag: lint-report # the same across runs, which updates the comment from previous runs
 
     - name: Report lint passed as a PR comment
-      if: always() && ${{ inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'false' }}
+      if: ${{ always() && inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'false' }}
       continue-on-error: true # Do not fail the workflow if the comment fails or if not a PR
       uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
       with:
