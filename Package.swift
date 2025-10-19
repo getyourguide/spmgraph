@@ -35,17 +35,17 @@ let package = Package(
     ),
     .package(
       url: "https://github.com/apple/swift-argument-parser.git",
-      .upToNextMinor(from: "1.2.2")
+      .upToNextMinor(from: "1.6.2")
     ),
 
     // TODO: Review which tag / Swift release to use
     // - Initially it may be strict and sometimes "enforce" specific Xcode/Swift toolchains
-    // - For now pinned to the 6.0 release / Xcode 16.0
+    // - For now pinned to the 6.1 release / Xcode 16.3
     //
     // It auto exports SwiftToolsSupport, so no need to directly depend on the former 🙏
     .package(
       url: "https://github.com/apple/swift-package-manager",
-      revision: "swift-6.0-RELEASE"
+      revision: "swift-6.1-RELEASE"
     ),
     .package(
       url: "https://github.com/aus-der-Technik/FileMonitor",
@@ -105,7 +105,8 @@ let package = Package(
         .product(
           name: "SwiftPMDataModel",
           package: "swift-package-manager"
-        )
+        ),
+        .target(name: "Core"),
       ]
     ),
 
