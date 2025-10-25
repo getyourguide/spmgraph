@@ -56,6 +56,14 @@
         "identifier" : "SPMGraphExecutableTests",
         "name" : "SPMGraphExecutableTests"
       }
+    },
+    {
+      "parallelizable" : false,
+      "target" : {
+        "containerPath" : "container:",
+        "identifier" : "SPMGraphDescriptionInterfaceTests",
+        "name" : "SPMGraphDescriptionInterfaceTests"
+      }
     }
   ],
   "version" : 1
