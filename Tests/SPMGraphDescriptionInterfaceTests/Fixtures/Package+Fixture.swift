@@ -17,6 +17,8 @@
 //
 //
 
+import Basics
+import Foundation
 import PackageModel
 import Workspace
 

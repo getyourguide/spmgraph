@@ -156,7 +156,7 @@ let package = Package(
           package: "swift-argument-parser"
         ),
       ],
-      resources: [.copy("Fixtures/")]
+      resources: [.copy("Fixtures/PackageFixture")]
     )
   ]
 )
