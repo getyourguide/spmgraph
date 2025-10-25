@@ -145,6 +145,18 @@ let package = Package(
       dependencies: [
         .target(name: "SPMGraphExecutable"),
       ]
+    ),
+    .testTarget(
+      name: "SPMGraphDescriptionInterfaceTests",
+      dependencies: [
+        .target(name: "SPMGraphDescriptionInterface"),
+        .target(name: "Core"),
+        .product(
+          name: "ArgumentParser",
+          package: "swift-argument-parser"
+        ),
+      ],
+      resources: [.copy("Fixtures/")]
     )
   ]
 )
