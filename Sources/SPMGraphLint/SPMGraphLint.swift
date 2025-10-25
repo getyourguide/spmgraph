@@ -24,7 +24,7 @@ import SPMGraphDescriptionInterface
 
 // MARK: - Input
 
-public struct SPMGraphLintInput {
+public struct SPMGraphLintInput: Equatable {
   /// "Directory path of Package.swift file"
   let spmPackageDirectory: AbsolutePath
   /// A custom build directory for the package used to edit and load the SPMGraphConfig.
@@ -40,9 +40,11 @@ public struct SPMGraphLintInput {
   let expectedWarningsCount: UInt
   /// Relative path for an output file with the formatted lint results. By default the errors are added only listed in the sdtout.
   let outputFilePath: String?
+}
 
+public extension SPMGraphLintInput {
   /// Makes an instance of ``SPMGraphLintInput``
-  public init(
+  init(
     spmPackageDirectory: String,
     configBuildDirectory: String?,
     excludedSuffixes: [String],
