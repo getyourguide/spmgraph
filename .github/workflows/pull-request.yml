@@ -11,7 +11,7 @@ concurrency:
 
 jobs:        
   build_xcode_16:
-    name: Build and run tests
+    name: Build and run tests on Xcode 16.4
     runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
       id-token: write
@@ -39,7 +39,7 @@ jobs:
       timeout-minutes: 3
 
   build_xcode_26:
-    name: Build and run tests
+    name: Build and run tests on Xcode 26.0.1
     runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
       id-token: write
@@ -54,7 +54,7 @@ jobs:
     - name: Select Xcode 26.0 toolchain
       uses: ./.github/actions/xcode-version
       with:
-        xcode-version: '26.0'
+        xcode-version: '26.0.1'
       timeout-minutes: 2
 
     - name: Build spmgraph for Xcode 26.0
