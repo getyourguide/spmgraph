@@ -1,7 +1,7 @@
 # `spmgraph`: SwiftPM dependency graphs supercharged ⚡
 
 [![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml)
-![Toolchain](https://img.shields.io/badge/Swift-6.0+%20%7C%20Xcode%2016%2B-orange?logo=swift&logoColor=white)
+![Toolchain](https://img.shields.io/badge/Swift-6.1+%20%7C%20Xcode%2016%3B-orange?logo=swift&logoColor=white)
 [![Mint](https://img.shields.io/badge/Mint-getyourguide%2Fspmgraph-40c8a7?logo=leaf&logoColor=white)](https://github.com/getyourguide/spmgraph#installation)
 [![Swift Package Manager](https://rawgit.com/jlyonsmith/artwork/master/SwiftPackageManager/swiftpackagemanager-compatible.svg)](https://swift.org/package-manager/)
 

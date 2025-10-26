@@ -38,7 +38,7 @@ let package = Package(
       .upToNextMinor(from: "1.6.2")
     ),
 
-    // - Pinned to the the Swift 6.2 development / Xcode 26
+    // - Pinned to the the Swift 6.2 development / Xcode 16.3
     // It auto exports SwiftToolsSupport, so no need to directly depend it 🙏
     .package(
       url: "https://github.com/apple/swift-package-manager",
