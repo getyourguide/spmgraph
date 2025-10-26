@@ -10,13 +10,13 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:        
-  build_and_tests:
+  build_xcode_16:
     name: Build and run tests
     runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
-        id-token: write
-        contents: read
-        checks: write
+      id-token: write
+      contents: read
+      checks: write
     steps:
     - name: Check out repository
       uses: actions/checkout@v4
@@ -38,6 +38,19 @@ jobs:
       run: swift test
       timeout-minutes: 3
 
+  build_xcode_26:
+    name: Build and run tests
+    runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      timeout-minutes: 2
+
     - name: Select Xcode 26.0 toolchain
       uses: ./.github/actions/xcode-version
       with:
@@ -46,4 +59,10 @@ jobs:
 
     - name: Build spmgraph for Xcode 26.0
       run: swift build
+      timeout-minutes: 3
+
+    - name: Run tests on Xcode 26.0
+      env:
+        IS_RUNNING_TESTS: 1
+      run: swift test
       timeout-minutes: 3
