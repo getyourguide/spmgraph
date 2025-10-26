@@ -35,7 +35,7 @@ jobs:
     - name: Run tests on Xcode 16.4
       env:
         IS_RUNNING_TESTS: 1
-      run: swift test
+      run: swift test --no-parallel
       timeout-minutes: 3
 
   build_xcode_26:
@@ -64,5 +64,5 @@ jobs:
     - name: Run tests on Xcode 26.0
       env:
         IS_RUNNING_TESTS: 1
-      run: swift test
+      run: swift test --no-parallel
       timeout-minutes: 3
