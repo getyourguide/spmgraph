@@ -55,7 +55,7 @@ runs:
       name: Run spmgraph tests
       run: |
         # note: changed-files takes precedence over baseBranch
-        spmgraph tests ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} --baseBranch ${{ github.base_ref || 'main' }} --output ${{ inputs.output-format }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.changed-files && '--changed-files ${{ inputs.changed-files }}' || '' }} ${{ inputs.config-build-directory && '--config-build-directory ${{ inputs.config-build-directory }}' || '' }} ${{ inputs.experimental-ui-test-targets == 'true' && '--experimentalUITest' || '' }}
+        spmgraph tests ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} --baseBranch ${{ github.base_ref || 'main' }} --output ${{ inputs.output-format }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.changed-files && '--changed-files ${{ inputs.changed-files }}' || '' }} ${{ inputs.config-build-directory != '' && format('--config-build-directory "{0}"', inputs.config-build-directory) || '' }} ${{ inputs.experimental-ui-test-targets == 'true' && '--experimentalUITest' || '' }}
         if [ ! -s "$GITHUB_WORKSPACE/output.txt" ]; then
           echo "tests_needed=false" >> $GITHUB_OUTPUT
         else
