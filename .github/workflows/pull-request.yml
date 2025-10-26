@@ -12,7 +12,7 @@ concurrency:
 jobs:        
   build_and_tests:
     name: Build and run tests
-    runs-on: [self-hosted, macOS, ARM64, macstadium, bare-metal] # TODO: Replace with GitHub Action runners once it goes open source
+    runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
     permissions:
         id-token: write
         contents: read
