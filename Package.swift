@@ -38,11 +38,8 @@ let package = Package(
       .upToNextMinor(from: "1.6.2")
     ),
 
-    // TODO: Review which tag / Swift release to use
-    // - Initially it may be strict and sometimes "enforce" specific Xcode/Swift toolchains
-    // - For now pinned to the 6.1 release / Xcode 16.3
-    //
-    // It auto exports SwiftToolsSupport, so no need to directly depend on the former 🙏
+    // - Pinned to the the 6.1 release / Xcode 16.3
+    // It auto exports SwiftToolsSupport, so no need to directly depend it 🙏
     .package(
       url: "https://github.com/apple/swift-package-manager",
       revision: "swift-6.1-RELEASE"
@@ -144,10 +141,26 @@ let package = Package(
       name: "SPMGraphExecutableTests",
       dependencies: [
         .target(name: "SPMGraphExecutable"),
+        .target(name: "FixtureSupport"),
       ]
     ),
     .testTarget(
       name: "SPMGraphDescriptionInterfaceTests",
+      dependencies: [
+        .target(name: "SPMGraphDescriptionInterface"),
+        .target(name: "Core"),
+        .target(name: "FixtureSupport"),
+        .product(
+          name: "ArgumentParser",
+          package: "swift-argument-parser"
+        ),
+      ]
+    ),
+
+    // MARK: - Test support
+
+    .target(
+      name: "FixtureSupport",
       dependencies: [
         .target(name: "SPMGraphDescriptionInterface"),
         .target(name: "Core"),
@@ -156,7 +169,7 @@ let package = Package(
           package: "swift-argument-parser"
         ),
       ],
-      resources: [.copy("Fixtures/PackageFixture")]
+      resources: [.copy("Resources")]
     )
   ]
 )
