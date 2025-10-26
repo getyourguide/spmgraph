@@ -20,27 +20,29 @@
 import Basics
 import Foundation
 import PackageModel
+import Testing
 import Workspace
 
-enum FixtureError: Error {
-  case packagePathNotFound
+public extension AbsolutePath {
+  static var fixturePackagePath: AbsolutePath {
+    do {
+      return try AbsolutePath(
+        validating: "../Resources/PackageFixture",
+        relativeTo: .init(validating: #filePath)
+      )
+    } catch {
+      Issue.record("Unable to resolve fixture package path")
+      preconditionFailure("Unable to resolve fixture package path")
+    }
+  }
 }
 
-func loadFixturePackage() async throws -> Package {
-  guard
-    let path = Bundle.module
-      .path(forResource: "Package", ofType: "swift", inDirectory: "Fixtures/PackageFixture")?
-      .replacingOccurrences(of: "/Package.swift", with: "")
-  else {
-    throw FixtureError.packagePathNotFound
-  }
-
-  let fixturePackagePath = try AbsolutePath(validating: path)
+public func loadFixturePackage() async throws -> Package {
   let observability = ObservabilitySystem { print("\($0): \($1)") }
-  let workspace = try Workspace(forRootPackage: fixturePackagePath)
+  let workspace = try Workspace(forRootPackage: .fixturePackagePath)
 
   return try await workspace.loadRootPackage(
-    at: fixturePackagePath,
+    at: .fixturePackagePath,
     observabilityScope: observability.topScope
   )
 }

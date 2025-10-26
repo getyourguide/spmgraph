@@ -63,5 +63,9 @@ let package = Package(
       name: "BaseModuleTests",
       dependencies: ["BaseModule"]
     ),
+    .testTarget(
+      name: "ModuleWithUnusedDepTests",
+      dependencies: ["ModuleWithUnusedDep"]
+    ),
   ]
 )
