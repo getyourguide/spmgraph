@@ -17,6 +17,7 @@
 //
 
 import Basics
+import FixtureSupport
 import Foundation
 import Testing
 
@@ -66,21 +67,21 @@ struct SPMGraphExecutableE2ETests {
     // GIVEN
     let changedFilePath = AbsolutePath.fixturePackagePath
       .appending(component: "Sources")
-      .appending(component: "TargetB")
-      .appending(component: "Example")
+      .appending(component: "BaseModule")
+      .appending(component: "BaseModule")
       .appending(extension: "swift")
 
     // WHEN
     try runToolProcess(
-      command: "tests \(AbsolutePath.fixturePackagePath) --files \(changedFilePath) --output \(outputMode)"
+      command: "tests \(AbsolutePath.fixturePackagePath) --files \(changedFilePath) --output \(outputMode) --verbose"
     )
 
     // THEN
     assertProcess(
-      // Depending on the context it the stderr can have errors about duplicate symbols, to be reviewed!
+      // Depending on the context the stderr can have errors about duplicate symbols, to be reviewed!
       expectsError: nil,
       outputContains: outputMode == "textDump"
-      ? "TargetBTests,TargetATests"
+      ? "BaseModuleTests,ModuleWithUnusedDepTests"
       : "saved the formatted list of test modules to"
     )
 
@@ -96,7 +97,7 @@ struct SPMGraphExecutableE2ETests {
   @Test func initialConfig() async throws {
     // WHEN
     try runToolProcess(
-      command: "config \(AbsolutePath.fixturePackagePath) -d \(AbsolutePath.buildDir)",
+      command: "config \(AbsolutePath.fixturePackagePath) -d \(AbsolutePath.buildDir) --verbose",
       waitForExit: false
     )
 
@@ -351,18 +352,6 @@ private extension Bundle {
 }
 
 private extension AbsolutePath {
-  static var fixturePackagePath: AbsolutePath {
-    do {
-      return try AbsolutePath(
-        validating: "../../Fixtures/Package",
-        relativeTo: .init(validating: #filePath)
-      )
-    } catch {
-      Issue.record("Unable to resolve fixture package path")
-      preconditionFailure("Unable to resolve fixture package path")
-    }
-  }
-
   static var buildDir: AbsolutePath {
     do {
       return try localFileSystem.tempDirectory

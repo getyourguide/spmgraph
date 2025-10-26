@@ -17,6 +17,7 @@
 //
 
 import Basics
+import FixtureSupport
 import Foundation
 import PackageModel
 import Testing
