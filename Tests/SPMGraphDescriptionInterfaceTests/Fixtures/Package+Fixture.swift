@@ -22,12 +22,20 @@ import Foundation
 import PackageModel
 import Workspace
 
-func loadFixturePackage() async throws -> Package {
-  let path = Bundle.module
-    .path(forResource: "Package", ofType: "swift", inDirectory: "Fixtures/PackageFixture")?
-    .replacingOccurrences(of: "/Package.swift", with: "")
-  let fixturePackagePath = try AbsolutePath(validating: path!)
+enum FixtureError: Error {
+  case packagePathNotFound
+}
 
+func loadFixturePackage() async throws -> Package {
+  guard
+    let path = Bundle.module
+      .path(forResource: "Package", ofType: "swift", inDirectory: "Fixtures/PackageFixture")?
+      .replacingOccurrences(of: "/Package.swift", with: "")
+  else {
+    throw FixtureError.packagePathNotFound
+  }
+
+  let fixturePackagePath = try AbsolutePath(validating: path)
   let observability = ObservabilitySystem { print("\($0): \($1)") }
   let workspace = try Workspace(forRootPackage: fixturePackagePath)
 
