@@ -27,12 +27,6 @@ import Testing
 struct SPMGraphConfigTests {
   @Suite("liveModuleLiveDependency rule")
   struct LiveModuleLiveDependency {
-    private let package: Package
-
-    init() async throws {
-      package = try await loadFixturePackage()
-    }
-
     @Test("It has the correct properties")
     func testRuleProperties() {
       // GIVEN
@@ -53,6 +47,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.liveModuleLiveDependency()
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -75,6 +70,7 @@ struct SPMGraphConfigTests {
       )
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -87,6 +83,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.liveModuleLiveDependency()
 
       // WHEN - Exclude modules ending with "Live"
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, ["Live"])
 
       // THEN
@@ -101,6 +98,7 @@ struct SPMGraphConfigTests {
       )
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -110,12 +108,6 @@ struct SPMGraphConfigTests {
 
   @Suite("baseOrInterfaceModuleLiveDependency rule")
   struct BaseOrInterfaceModuleLiveDependency {
-    private let package: Package
-
-    init() async throws {
-      package = try await loadFixturePackage()
-    }
-
     @Test("It has the correct properties")
     func testRuleProperties() {
       // GIVEN
@@ -136,6 +128,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.baseOrInterfaceModuleLiveDependency()
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -150,6 +143,7 @@ struct SPMGraphConfigTests {
       )
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -180,6 +174,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.baseOrInterfaceModuleLiveDependency()
 
       // WHEN - Exclude base modules
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, ["Module"])
 
       // THEN
@@ -189,12 +184,6 @@ struct SPMGraphConfigTests {
 
   @Suite("unusedDependencies rule")
   struct UnusedDependenciesTests {
-    private let package: Package
-
-    init() async throws {
-      package = try await loadFixturePackage()
-    }
-
     @Test("It has the correct properties")
     func testRuleProperties() {
       // GIVEN
@@ -223,6 +212,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.unusedDependencies
 
       // WHEN
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, [])
 
       // THEN
@@ -245,6 +235,7 @@ struct SPMGraphConfigTests {
       let rule = SPMGraphConfig.Lint.Rule.unusedDependencies
 
       // WHEN - Exclude modules with "WithUnusedDep" suffix
+      let package = try await loadFixturePackage()
       let errors = rule.validate(package, ["BaseModule"])
 
       // THEN
