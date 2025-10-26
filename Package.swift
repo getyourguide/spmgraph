@@ -1,4 +1,4 @@
-// swift-tools-version: 6.0
+// swift-tools-version: 6.1
 
 import PackageDescription
 
@@ -38,11 +38,11 @@ let package = Package(
       .upToNextMinor(from: "1.6.2")
     ),
 
-    // - Pinned to the the 6.1 release / Xcode 16.3
+    // - Pinned to the the Swift 6.2 development / Xcode 26
     // It auto exports SwiftToolsSupport, so no need to directly depend it 🙏
     .package(
       url: "https://github.com/apple/swift-package-manager",
-      revision: "swift-6.1-RELEASE"
+      revision: "swift-6.2-RELEASE"
     ),
     .package(
       url: "https://github.com/aus-der-Technik/FileMonitor",
@@ -64,6 +64,9 @@ let package = Package(
           name: "SwiftPMDataModel",
           package: "swift-package-manager"
         ),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .target(
@@ -71,6 +74,9 @@ let package = Package(
       dependencies: [
         .target(name: "Core"),
         .target(name: "SPMGraphDescriptionInterface"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .target(
@@ -78,6 +84,9 @@ let package = Package(
       dependencies: [
         .target(name: "Core"),
         .target(name: "SPMGraphDescriptionInterface"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .target(
@@ -91,6 +100,9 @@ let package = Package(
       ],
       resources: [
         .copy("Resources")
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
 
@@ -104,6 +116,9 @@ let package = Package(
           package: "swift-package-manager"
         ),
         .target(name: "Core"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
 
@@ -116,6 +131,9 @@ let package = Package(
           name: "SwiftPMDataModel",
           package: "swift-package-manager"
         )
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
 
@@ -132,6 +150,9 @@ let package = Package(
           name: "ArgumentParser",
           package: "swift-argument-parser"
         ),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
 
@@ -142,6 +163,9 @@ let package = Package(
       dependencies: [
         .target(name: "SPMGraphExecutable"),
         .target(name: "FixtureSupport"),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
     .testTarget(
@@ -154,6 +178,9 @@ let package = Package(
           name: "ArgumentParser",
           package: "swift-argument-parser"
         ),
+      ],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
       ]
     ),
 
@@ -169,7 +196,10 @@ let package = Package(
           package: "swift-argument-parser"
         ),
       ],
-      resources: [.copy("Resources")]
+      resources: [.copy("Resources")],
+      swiftSettings: [
+        .enableExperimentalFeature("StrictConcurrency")
+      ]
     )
   ]
 )
