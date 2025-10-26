@@ -81,7 +81,7 @@ struct SPMGraphExecutableE2ETests {
       // Depending on the context the stderr can have errors about duplicate symbols, to be reviewed!
       expectsError: nil,
       outputContains: outputMode == "textDump"
-      ? "BaseModuleTests,ModuleWithUnusedDepTests"
+      ? "ModuleWithUnusedDepTests,BaseModuleTests"
       : "saved the formatted list of test modules to"
     )
 
