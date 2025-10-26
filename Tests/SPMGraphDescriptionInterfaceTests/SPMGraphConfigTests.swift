@@ -95,7 +95,7 @@ struct SPMGraphConfigTests {
 
     @Test("Validate with custom Live module definition")
     func testValidateWithCustomLiveModuleDefinition() async throws {
-      // GIVEN - isModule defines modules ending with "Interface"
+      // GIVEN - isLiveModule defines modules ending with "Interface"
       let rule = SPMGraphConfig.Lint.Rule.liveModuleLiveDependency(
         isLiveModule: { $0.name.hasSuffix("Interface") }
       )
