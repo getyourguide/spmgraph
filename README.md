@@ -1,7 +1,7 @@
 # `spmgraph`: SwiftPM dependency graphs supercharged ⚡
 
 [![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml)
-![Toolchain](https://img.shields.io/badge/Swift-6.0+%20%7C%20Xcode%2016%2B-orange?logo=swift&logoColor=white)
+![Toolchain](https://img.shields.io/badge/Swift-6.1+%20%7C%20Xcode%2016%3B-orange?logo=swift&logoColor=white)
 [![Mint](https://img.shields.io/badge/Mint-getyourguide%2Fspmgraph-40c8a7?logo=leaf&logoColor=white)](https://github.com/getyourguide/spmgraph#installation)
 [![Swift Package Manager](https://rawgit.com/jlyonsmith/artwork/master/SwiftPackageManager/swiftpackagemanager-compatible.svg)](https://swift.org/package-manager/)
 
@@ -130,10 +130,17 @@ spmgraph lint <package-path> --strict --warningsCount 3 <other-options>
 
 Custom GitHub actions are [available](./github/actions) for running the different spmgraph commands in CI environments.
 
-**When using multiple runners AND to speed up builds**:
-- Pass a custom config build directory via the `--config-build-directory` option
+**To speed up builds**:
+- Pass a custom config build directory via the `--config-build-directory`/`--build-dir` option
 - It allows caching and pre-warming the config package
-- It will make loading the config into spmgraph much faster
+
+### Cache warm
+- Run `config`, `load` and `lint` passing the `--config-build-directory`/`--build-dir` option
+- Cache the directory
+
+### Cache pull
+- Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
+- Run `lint` the `--config-build-directory`/`--build-dir` option
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)
@@ -150,9 +157,6 @@ mint install getyourguide/spmgraph
 
 ## Acknowledgments
 - Inspired by the work that the [Tuist](https://tuist.dev/) team does for the Apple developers community and their focus on leveraging the dependency graph to provide amazing features for engineers. Also, a source of inspiration for our shell abstraction layer.
-
-## Open roadmap
-- [ ] Cover the core logic of Lint, Map, and Visualize libs with tests
 
 ## Contributing
 Check the [CONTRIBUTING.md](./CONTRIBUTING.md) file.

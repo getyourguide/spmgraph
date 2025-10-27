@@ -25,20 +25,12 @@ inputs:
     description: Minimum vertical spacing between the ranks (levels) of the graph. A double value in inches.
     type: number
     default: '3'
-  config-build-directory:
-    description: >
-      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
-      
-      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
-      
-      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
-    required: false
 
 runs:
   using: 'composite'
   steps:
     - name: Run spmgraph visualize
       run: |
-        spmgraph visualize ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.focused-module && '--focusedModule ${{ inputs.focused-module }}' || '' }} ${{ inputs.exclude-third-party-dependencies =='true' && '--excludeThirdPartyDependencies ${{ inputs.exclude-third-party-dependencies }}' || '' }} --outputFilePath ${{ inputs.output-file-path }} --rankSpacing ${{ inputs.rank-spacing }} ${{ inputs.config-build-directory && '--config-build-directory ${{ inputs.config-build-directory }}' || '' }}
+        spmgraph visualize ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.focused-module && '--focusedModule ${{ inputs.focused-module }}' || '' }} ${{ inputs.exclude-third-party-dependencies =='true' && '--excludeThirdPartyDependencies ${{ inputs.exclude-third-party-dependencies }}' || '' }} --outputFilePath ${{ inputs.output-file-path }} --rankSpacing ${{ inputs.rank-spacing }}
       shell: /bin/bash -e {0}
 

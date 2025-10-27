@@ -133,7 +133,7 @@ public extension SPMGraphConfig.Lint.Rule {
       validate: { package, excludedSuffixes in
         let liveModules = package.modules
           .filter { !$0.containsOneOf(suffixes: excludedSuffixes) }
-          .filter(\.isLiveModule)
+          .filter(isLiveModule)
           .sorted()
 
         let errors: [SPMGraphConfig.Lint.Error] =
@@ -141,7 +141,7 @@ public extension SPMGraphConfig.Lint.Rule {
           .map { liveModule in
             liveModule.dependencies
               .compactMap(\.module)
-              .filter(\.isLiveModule == true)
+              .filter(isLiveModule)
               .filter { !excludedDependencies.contains($0.name) }
               .map { dependency in
                 SPMGraphConfig.Lint.Error.liveModuleLiveDependency(
@@ -223,7 +223,7 @@ public extension SPMGraphConfig.Lint.Rule {
       
       - Note: For `@_exported` usages, there will be an error in case only the exported module is used.
       For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
-      there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error. 
+      there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
       """,
     validate: { package, excludedSuffixes in
       let errors: [SPMGraphConfig.Lint.Error] = package.modules
@@ -355,7 +355,7 @@ extension Module: @retroactive Comparable {
 }
 
 extension SPMGraphConfig.Lint {
-  enum Error: LocalizedError {
+  enum Error: LocalizedError, Equatable {
     case liveModuleLiveDependency(moduleName: String, liveDependencyName: String)
     case baseOrInterfaceModuleLiveDependency(moduleName: String, liveDependencyName: String)
     case unusedDependencies(moduleName: String, dependencyName: String)
