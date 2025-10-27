@@ -24,11 +24,11 @@ jobs:
       uses: ./.github/actions/xcode-version
       with:
         xcode-version: '16.4'
-      timeout-minutes: 2
+      timeout-minutes: 1
     
     - name: Build spmgraph for Xcode 16.4
       run: swift build
-      timeout-minutes: 3
+      timeout-minutes: 5
 
     - name: Run tests on Xcode 16.4
       env:
@@ -53,11 +53,11 @@ jobs:
       uses: ./.github/actions/xcode-version
       with:
         xcode-version: '26.0.1'
-      timeout-minutes: 2
+      timeout-minutes: 1
 
     - name: Build spmgraph for Xcode 26.0
       run: swift build
-      timeout-minutes: 3
+      timeout-minutes: 5
 
     - name: Run tests on Xcode 26.0
       env:
