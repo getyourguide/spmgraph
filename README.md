@@ -130,15 +130,15 @@ spmgraph lint <package-path> --strict --warningsCount 3 <other-options>
 
 Custom GitHub actions are [available](./github/actions) for running the different spmgraph commands in CI environments.
 
-**To speed up builds**:
+### To speed up builds
 - Pass a custom config build directory via the `--config-build-directory`/`--build-dir` option
 - It allows caching and pre-warming the config package
 
-### Cache warm
+#### Cache warm
 - Run `config`, `load` and `lint` passing the `--config-build-directory`/`--build-dir` option
 - Cache the directory
 
-### Cache pull
+#### Cache pull
 - Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
 - Run `lint` the `--config-build-directory`/`--build-dir` option
 
