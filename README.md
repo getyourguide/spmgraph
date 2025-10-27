@@ -130,10 +130,17 @@ spmgraph lint <package-path> --strict --warningsCount 3 <other-options>
 
 Custom GitHub actions are [available](./github/actions) for running the different spmgraph commands in CI environments.
 
-**When using multiple runners AND to speed up builds**:
-- Pass a custom config build directory via the `--config-build-directory` option
+**To speed up builds**:
+- Pass a custom config build directory via the `--config-build-directory`/`--build-dir` option
 - It allows caching and pre-warming the config package
-- It will make loading the config into spmgraph much faster
+
+### Cache warm
+- Run `config`, `load` and `lint` passing the `--config-build-directory`/`--build-dir` option
+- Cache the directory
+
+### Cache pull
+- Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
+- Run `lint` the `--config-build-directory`/`--build-dir` option
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)
