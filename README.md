@@ -140,7 +140,7 @@ Custom GitHub actions are [available](./github/actions) for running the differen
 
 #### Cache pull
 - Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
-- Run `lint` the `--config-build-directory`/`--build-dir` option
+- Run `lint` with the `--config-build-directory`/`--build-dir` option
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)
