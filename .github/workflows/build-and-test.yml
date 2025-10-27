@@ -1,13 +1,11 @@
-name: Pull Request
-description: Run the pull request checks, such as building spmgraph for different toolchains and running tests.
+name: Build and tests
+description: Runs on pushes to main (merges) and on pushes to PR branches
 on:
-  pull_request:
-    types: [synchronize, opened, reopened, edited] # The first three are defaults, with 'edited' included the builds will be triggered on things like the base of the branch changing
-  workflow_dispatch:
+  push:
 
 concurrency:
   group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: ${{ github.event_name == 'push' }}
 
 jobs:        
   build_xcode_16:
