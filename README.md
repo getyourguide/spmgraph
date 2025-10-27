@@ -1,6 +1,6 @@
 # `spmgraph`: SwiftPM dependency graphs supercharged ⚡
 
-[![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml/badge.svg)](https://github.com/getyourguide/spmgraph/actions/workflows/main.yml)
+[![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/getyourguide/spmgraph/actions/workflows/build-and-test.yml?query=branch%3Amain)
 ![Toolchain](https://img.shields.io/badge/Swift-6.1+%20%7C%20Xcode%2016%3B-orange?logo=swift&logoColor=white)
 [![Mint](https://img.shields.io/badge/Mint-getyourguide%2Fspmgraph-40c8a7?logo=leaf&logoColor=white)](https://github.com/getyourguide/spmgraph#installation)
 [![Swift Package Manager](https://rawgit.com/jlyonsmith/artwork/master/SwiftPackageManager/swiftpackagemanager-compatible.svg)](https://swift.org/package-manager/)
@@ -130,17 +130,17 @@ spmgraph lint <package-path> --strict --warningsCount 3 <other-options>
 
 Custom GitHub actions are [available](./github/actions) for running the different spmgraph commands in CI environments.
 
-**To speed up builds**:
+### To speed up builds
 - Pass a custom config build directory via the `--config-build-directory`/`--build-dir` option
 - It allows caching and pre-warming the config package
 
-### Cache warm
+#### Cache warm
 - Run `config`, `load` and `lint` passing the `--config-build-directory`/`--build-dir` option
 - Cache the directory
 
-### Cache pull
+#### Cache pull
 - Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
-- Run `lint` the `--config-build-directory`/`--build-dir` option
+- Run `lint` with the `--config-build-directory`/`--build-dir` option
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)

@@ -76,5 +76,3 @@ struct Lint: AsyncParsableCommand {
     try await library.run()
   }
 }
-
-extension CommandConfiguration: @unchecked @retroactive Sendable {}
