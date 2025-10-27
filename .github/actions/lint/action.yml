@@ -36,6 +36,9 @@ inputs:
       **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
       
       A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory, which works consistently for local runs and CI with clean builds.
+      
+      - **Note**: Cache this directory in your CI and reuse whenever the `SPMGraphConfig.swift` is stable for reducing the build times.
       
       - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
     required: false
