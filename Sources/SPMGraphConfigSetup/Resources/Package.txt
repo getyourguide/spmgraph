@@ -17,11 +17,10 @@ let package = Package(
     ),
   ],
   dependencies: [
-    // TODO: Change it to HTTP when made public
     // TODO: Automate updating the revision based on the matching release
     .package(
-      url: "git@github.com:getyourguide/spmgraph.git",
-      revision: "f70a8f6d35ac40e4875d1822c36ddc15e0ca27ab"
+      url: "https://github.com/getyourguide/spmgraph.git",
+      exact: "0.0.8"
     ),
     // - Pinned to the the Swift 6.2 development / Xcode 16.3
     // It auto exports SwiftToolsSupport, so no need to directly depend it 🙏
