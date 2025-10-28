@@ -26,7 +26,7 @@ struct TestsArguments: ParsableArguments {
     name: [.customLong("files"), .customLong("changedFiles")],
     help: "Optional list of changed files. Otherwise git versioning is used. It supports both absolute and relative paths"
   )
-  var changedFiles: [String] = []  // TODO: Change to AbsolutePath
+  var changedFiles: [String] = []
 
   @Option(
     name: [.customLong("baseBranch"), .customLong("branch"), .short],
@@ -50,8 +50,6 @@ struct TestsArguments: ParsableArguments {
 
   @OptionGroup
   var config: SPMGraphConfigArguments
-
-  // TODO: Review if gitDir options is needed - generally git is in the root dir of the root Package
 }
 
 struct Tests: AsyncParsableCommand {
