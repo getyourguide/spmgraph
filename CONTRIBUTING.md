@@ -16,6 +16,8 @@ Leverage the [shared spmgraph xcscheme](./.swiftpm/xcode/xcshareddata/xcschemes/
   - Update the arguments with the path to your Package.swift
   - **Do not commit** such changes
 
+The spmgraph config package depends on spmgraph itself, and by default uses the latest release. Update the reference, in `Sources/SPMGraphConfigSetup/Resources/Package.txt`, to your working branch in order to have `spmgraph` changes take effect in the spmgraph config part
+
 ## Pull Request Process
 
 - Aim to keep pull requests scoped to one feature to ease review
