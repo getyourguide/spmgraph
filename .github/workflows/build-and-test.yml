@@ -10,7 +10,7 @@ concurrency:
 jobs:        
   build_xcode_16:
     name: Build and run tests on Xcode 16.4
-    runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
+    runs-on: [macos-latest]
     permissions:
       id-token: write
       contents: read
@@ -38,7 +38,7 @@ jobs:
 
   build_xcode_26:
     name: Build and run tests on Xcode 26.0.1
-    runs-on: [macos-orka-large] # TODO: Replace with GitHub Action runners once it goes open source
+    runs-on: [macos-latest]
     permissions:
       id-token: write
       contents: read

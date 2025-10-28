@@ -24,7 +24,7 @@ concurrency:
 jobs:        
   release:
     name: Release a new version
-    runs-on: [self-hosted, java-small] # TODO: Replace with GitHub Action runners once it goes open source
+    runs-on: [ubuntu-latest]
     permissions:
         id-token: write
         contents: write
