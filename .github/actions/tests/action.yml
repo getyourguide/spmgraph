@@ -1,0 +1,81 @@
+name: 'spmgraph tests'
+description: 'Map tests to run based on changed files of a given dependency graph'
+inputs:
+  package-directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  excluded-suffixes:
+    description: Comma separated suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
+    required: false
+    default: ''
+  base-branch:
+    description: Base branch to compare the changes against
+    required: false
+    default: 'main'
+  changed-files:
+    description: Optional list of changed files. Otherwise git versioning is used
+    required: false
+    default: ''
+  output-format:
+    description: "The output mode. Options are: textDump, textFile. The first dumps the list of test modules to run in a single line, while the latter Saves the list of test modules into an `output.txt` file in the `current dir`. Both follow the following the xcodebuild/fastlane scan expected format."
+    required: false
+    default: 'textDump'
+  adds-to-summary:
+    description: List the filtered tests in the action summary.
+    type: boolean
+    default: false
+  config-build-directory:
+    description: >
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory, which works consistently for local runs and CI with clean builds.
+      
+      - **Note**: Cache this directory in your CI and reuse whenever the `SPMGraphConfig.swift` is stable for reducing the build times.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+    required: false
+  experimental-ui-test-targets:
+    description: "Warning: This is an experimental flag, use it with caution! Enables support for including UITest targets on selecting testing. It looks for a `uiTestsDependencies.json` in the temporary directory, reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run."
+    type: boolean
+    default: false
+outputs:
+  test_targets:
+    description: A comma separated list of test targets to run. It can be passed as is to xcodebuild or fastlane scan.
+    value: ${{ steps.spmgraph_test.outputs.test_targets }}
+  tests_needed:
+    description: Whether running tests is needed or not.
+    value: ${{ steps.spmgraph_test.outputs.tests_needed }}
+
+runs:
+  using: 'composite'
+  steps:
+    - id: spmgraph_test
+      name: Run spmgraph tests
+      run: |
+        # note: changed-files takes precedence over baseBranch
+        spmgraph tests ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} --baseBranch ${{ github.base_ref || 'main' }} --output ${{ inputs.output-format }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.changed-files && '--changed-files ${{ inputs.changed-files }}' || '' }} ${{ inputs.config-build-directory != '' && format('--config-build-directory "{0}"', inputs.config-build-directory) || '' }} ${{ inputs.experimental-ui-test-targets == 'true' && '--experimentalUITest' || '' }}
+        if [ ! -s "$GITHUB_WORKSPACE/output.txt" ]; then
+          echo "tests_needed=false" >> $GITHUB_OUTPUT
+        else
+          echo "tests_needed=true" >> $GITHUB_OUTPUT
+          echo "test_targets=$(cat $GITHUB_WORKSPACE/output.txt)" >> $GITHUB_OUTPUT
+        fi
+      shell: /bin/bash -e {0}
+
+    - name: Write to workflow job summary
+      if: ${{ inputs.adds-to-summary == 'true' }}
+      run: |
+        tests_summary=$'# spmgraph tests\n## Tests to run\n'
+        echo "$tests_summary" >> $GITHUB_STEP_SUMMARY
+
+        if [ "${{ steps.spmgraph_test.outputs.tests_needed }}" != "false" ]; then
+          cat $GITHUB_WORKSPACE/output.txt | tr ',' '\n' | sort >> $GITHUB_STEP_SUMMARY
+        else
+          echo "No tests to run" >> $GITHUB_STEP_SUMMARY
+        fi
+      shell: /bin/bash -e {0}

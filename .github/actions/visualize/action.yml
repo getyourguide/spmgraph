@@ -1,0 +1,36 @@
+name: 'spmgraph visualize'
+description: 'Generates an visual representation of the dependency graph of a local Package.swift'
+inputs:
+  package-directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  excluded-suffixes:
+    description: Comma separated suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
+    required: false
+    default: ''
+  focused-module: 
+    description: Focus on a specific module by highlighting its edges (arrows) in a different color. Provide the module name.
+  exclude-third-party-dependencies: 
+    description: "Exclude third-party dependencies from the graph declared in the `Package.swift`"
+    type: boolean
+    default: false
+  output-file-path: 
+    description: Custom output file path for the generated PNG file. Default will generate a 'graph.png' file in the current directory.
+    default: './graph.png'
+  rank-spacing: 
+    description: Minimum vertical spacing between the ranks (levels) of the graph. A double value in inches.
+    type: number
+    default: '3'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run spmgraph visualize
+      run: |
+        spmgraph visualize ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.focused-module && '--focusedModule ${{ inputs.focused-module }}' || '' }} ${{ inputs.exclude-third-party-dependencies =='true' && '--excludeThirdPartyDependencies ${{ inputs.exclude-third-party-dependencies }}' || '' }} --outputFilePath ${{ inputs.output-file-path }} --rankSpacing ${{ inputs.rank-spacing }}
+      shell: /bin/bash -e {0}
+

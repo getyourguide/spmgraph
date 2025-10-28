@@ -1,0 +1,66 @@
+name: Build and tests
+description: Runs on pushes to main (merges) and on pushes to PR branches
+on:
+  push:
+
+concurrency:
+  group: '${{ github.workflow }}-${{ github.head_ref || github.run_id }}'
+  cancel-in-progress: ${{ github.event_name == 'push' }}
+
+jobs:        
+  build_xcode_16:
+    name: Build and run tests on Xcode 16.4
+    runs-on: [macos-latest]
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      timeout-minutes: 2
+
+    - name: Select Xcode 16.4 toolchain
+      uses: ./.github/actions/xcode-version
+      with:
+        xcode-version: '16.4'
+      timeout-minutes: 1
+    
+    - name: Build spmgraph for Xcode 16.4
+      run: swift build
+      timeout-minutes: 5
+
+    - name: Run tests on Xcode 16.4
+      env:
+        IS_RUNNING_TESTS: 1
+      run: swift test --no-parallel
+      timeout-minutes: 3
+
+  build_xcode_26:
+    name: Build and run tests on Xcode 26.0.1
+    runs-on: [macos-latest]
+    permissions:
+      id-token: write
+      contents: read
+      checks: write
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+      timeout-minutes: 2
+
+    - name: Select Xcode 26.0 toolchain
+      uses: ./.github/actions/xcode-version
+      with:
+        xcode-version: '26.0.1'
+      timeout-minutes: 1
+
+    - name: Build spmgraph for Xcode 26.0
+      run: swift build
+      timeout-minutes: 5
+
+    - name: Run tests on Xcode 26.0
+      env:
+        IS_RUNNING_TESTS: 1
+      run: swift test --no-parallel
+      timeout-minutes: 3

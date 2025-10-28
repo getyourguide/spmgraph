@@ -1,0 +1,87 @@
+name: 'spmgraph lint'
+description: 'Lints the dependency graph of a local Package.swift'
+inputs:
+  package-directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  excluded-suffixes:
+    description: Comma separated suffixes to exclude from the graph e.g. 'Tests','Live','TestSupport'
+    required: false
+    default: ''
+  strict:
+    description: Errors out on warnings and fail the check.
+    type: boolean
+    default: false
+  adds-to-summary: 
+    description: Reports the lint errors in the action summary.
+    type: boolean
+    default: true
+  summary-limit:
+    description: |
+      The maximum number of characters to include in the summary. Needed for the lint output to appear in the summary.
+      GitHub Actions summary has a limit of 1mb and around 65k characters.
+      See https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/workflow-commands-for-github-actions#step-isolation-and-limits"
+    type: number
+    default: 50000
+  adds-pr-comment: 
+    description: Reports the lint errors in a PR comment.
+    type: boolean
+    default: false
+  config-build-directory:
+    description: >
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory, which works consistently for local runs and CI with clean builds.
+      
+      - **Note**: Cache this directory in your CI and reuse whenever the `SPMGraphConfig.swift` is stable for reducing the build times.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+    required: false
+  
+  # TODO: Support danger as option for PR comment, requires making it a Danger plugin
+
+runs:
+  using: 'composite'
+  steps:
+    - id: lint-dependency-graph
+      name: Run spmgraph lint
+      run: |
+        spmgraph lint ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.excluded-suffixes && '--excludedSuffixes ${{ inputs.excluded-suffixes }}' || '' }} ${{ inputs.strict == 'true' && '--strict' || '' }} --output lint_output ${{ inputs.config-build-directory != '' && format('--config-build-directory "{0}"', inputs.config-build-directory) || '' }}
+
+        # Set boolean output to indicate if lint failed or not
+        echo "lint-failed=$(cat $GITHUB_WORKSPACE/.spmgraph_lint_result.txt)" >> $GITHUB_OUTPUT
+      shell: /bin/bash -e {0}
+
+    - name: Write to workflow job summary
+      if: ${{ always() && inputs.adds-to-summary == 'true' }}
+      run: |
+        lint_summary=$'# spmgraph lint\n## Results\n'
+        echo "$lint_summary" >> $GITHUB_STEP_SUMMARY
+        
+        # Limit the output characters so it's more likely that it appears in the summary
+        cat $GITHUB_WORKSPACE/lint_output.txt | head -c ${{ inputs.summary-limit }} >> $GITHUB_STEP_SUMMARY
+
+        output_warning=$'#### The output was truncated so that it does not surpass 1mb.'
+        echo "$output_warning" >> $GITHUB_STEP_SUMMARY
+      shell: /bin/bash -e {0}
+
+    - name: Report warnings as a PR comment
+      if: ${{ always() && inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'true' }}
+      continue-on-error: true # Do not fail the workflow if the comment fails or if not a PR
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
+      with:
+        file-path: /Users/administrator/runner/_work/iOS/iOS/lint_output.txt
+        comment-tag: lint-report # the same across runs, which updates the comment from previous runs
+
+    - name: Report lint passed as a PR comment
+      if: ${{ always() && inputs.adds-pr-comment == 'true' && steps.lint-dependency-graph.outputs.lint-failed == 'false' }}
+      continue-on-error: true # Do not fail the workflow if the comment fails or if not a PR
+      uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
+      with:
+        message: spmgraph lint found no errors! The dependency graph looks tidy ✨
+        comment-tag: lint-report # the same across runs, which updates the comment from previous runs

@@ -1,0 +1,28 @@
+name: 'spmgraph load'
+description: 'Loads the user config into spmgraph through a dynamic library'
+inputs:
+  package-directory:
+    description: The directory where the Package.swift file is located
+    required: true
+  verbose: 
+    description: Show extra logging for troubleshooting purposes.
+    type: boolean
+    default: false
+  config-build-directory:
+    description: >
+      **For users that leverage the lint capability and rely on the `SPMGraphConfig.swift` file**.
+      
+      A custom build directory that enables CI controlling and caching of the package used to edit and load the SPMGraphConfig.
+      It defaults to a temporary directory, which works consistently for local runs and CI with clean builds.
+      
+      - **Note**: Cache this directory in your CI and reuse whenever the `SPMGraphConfig.swift` is stable for reducing the build times.
+      
+      - **Warning**: Ensure this is consistent across commands, otherwise your configuration won't be correctly loaded!
+    required: false
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Run spmgraph load
+      run: spmgraph load ${{ inputs.package-directory }} ${{ inputs.verbose == 'true' && '-v' || '' }} ${{ inputs.config-build-directory != '' && format('--config-build-directory "{0}"', inputs.config-build-directory) || '' }}
+      shell: /bin/bash -e {0}

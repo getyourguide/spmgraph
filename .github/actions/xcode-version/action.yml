@@ -1,0 +1,18 @@
+name: 'Selects the Xcode toolchain'
+description: 'Switches to the toolchain defined in the `xcode-version`. Note: It requires Xcodes to be installed on the runner and it follows the `.xcode-version` syntax defined here: https://github.com/XcodesOrg/xcodes/blob/main/XCODE_VERSION.md.'
+inputs:
+  xcode-version:
+    description: 'The Xcode version to select'
+    required: true
+    default: '16.4'
+runs:
+  using: 'composite'
+  steps:
+    - name: Switch to .xcode-version
+      run: xcodes select ${{ inputs.xcode-version }}
+      id: version_switch
+      shell: /bin/bash -e {0}
+    
+    - name: Sets the XCODE_VERSION env var
+      run: echo "XCODE_VERSION=$(cat ${{ inputs.xcode-version }})" >> $GITHUB_ENV
+      shell: /bin/bash -e {0}
