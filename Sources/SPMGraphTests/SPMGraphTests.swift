@@ -36,7 +36,7 @@ public struct SPMGraphTestsInput {
   /// Base branch to compare the changes against
   let baseBranch: String
   /// The output mode
-  let outputMode: SPMGraphTests.OutputMode  // TODO: Check if it make sense in the SPMGraphConfig fle
+  let outputMode: SPMGraphTests.OutputMode
   /// Enables support for including UITest targets on selecting testing. It looks for a `uiTestsDependencies.json` in the temporary directory,
   /// reads it, and checks if any of the UITest targets dependencies are affected, if so, it includes them in the list of test targets to run.
   ///
