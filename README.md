@@ -1,4 +1,9 @@
-# `spmgraph`: SwiftPM dependency graphs supercharged ⚡
+<h2>
+  <picture>
+    <img alt="spmgraph logo" src="assets/logo.PNG" width="200" align="absmiddle" />
+  </picture>
+  <span> SwiftPM dependency graphs supercharged</span>
+</h2>
 
 [![CI status](https://github.com/getyourguide/spmgraph/actions/workflows/build-and-test.yml/badge.svg?branch=main)](https://github.com/getyourguide/spmgraph/actions/workflows/build-and-test.yml?query=branch%3Amain)
 ![Toolchain](https://img.shields.io/badge/Swift-6.1+%20%7C%20Xcode%2016.3+-orange?logo=swift&logoColor=white)
