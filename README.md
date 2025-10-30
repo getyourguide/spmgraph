@@ -1,5 +1,7 @@
 <h2>
   <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="assets/logo-dark.PNG">
+    <source media="(prefers-color-scheme: light)" srcset="assets/logo.PNG">
     <img alt="spmgraph logo" src="assets/logo.PNG" width="200" align="absmiddle" />
   </picture>
   <span> SwiftPM dependency graphs supercharged</span>
