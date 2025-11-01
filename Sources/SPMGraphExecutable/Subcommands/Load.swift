@@ -41,7 +41,7 @@ struct Load: AsyncParsableCommand {
     abstract: "Loads your configuration into spmgraph.",
     discussion:
       "It dynamically loads your `SPMGraphConfig.swift` file into spmgraph so that it can be used by the tool and leveraged on all other commands.",
-    version: "1.0.0"
+    version: "1.0.1"
   )
 
   @OptionGroup var arguments: LoadArguments
