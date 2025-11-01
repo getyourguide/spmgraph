@@ -17,11 +17,13 @@ let package = Package(
     ),
   ],
   dependencies: [
-    // From `1.0.0` so that it always automatically picks and uses the latest release
-    // When developing it should be updated to the working branch
+    // Pinned to the latest commit of the release, otherwise it fails because it depends
+    // on the `swift-package-manager` that isn't a stable release.
+    //
+    // - Note: When developing it should be updated to the working branch
     .package(
       url: "https://github.com/getyourguide/spmgraph.git",
-      from: "1.0.0"
+      revision: "17256eaab5d1233bc21e174393bf0ee518287fa9"
     ),
     // - Pinned to the the Swift 6.2 development / Xcode 16.3
     // It auto exports SwiftToolsSupport, so no need to directly depend it 🙏
