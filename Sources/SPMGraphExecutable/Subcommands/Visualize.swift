@@ -52,7 +52,7 @@ struct VisualizeArguments: ParsableArguments {
 struct Visualize: AsyncParsableCommand {
   static let configuration = CommandConfiguration(
     abstract: "Generates a visual representation of your dependency graph",
-    version: "1.0.0"
+    version: "1.0.1"
   )
 
   @OptionGroup var arguments: VisualizeArguments
