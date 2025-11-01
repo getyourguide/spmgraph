@@ -142,16 +142,17 @@ Custom GitHub actions are [available](./github/actions) for running the differen
 - It allows caching and pre-warming the config package
 
 #### Cache warm
-- Run `config`, `load` and `lint` passing the `--config-build-directory`/`--build-dir` option
-- Cache the directory
+- Run `config`, `load`, and `lint` passing the `--config-build-directory`/`--build-dir` option
+- Store the whole directory as an artifact
 
 #### Cache pull
+- Pull the stored directory used when warming the cache
 - Skip running `config` and `load`, unless the `SPMGraphConfig.swift` has changed
-- Run `lint` with the `--config-build-directory`/`--build-dir` option
+- Run `lint` passing the cached directory to the `--config-build-directory`/`--build-dir` option
 
 ## Requirements
 - [graphviz](https://github.com/graphp/graphviz) (available via `brew install graphviz`)
-- Xcode 16+ and the Swift 6.0+ toolchain
+- Xcode 16.3+ and the Swift 6.1+ toolchain
 
 ## Installation
 
