@@ -67,9 +67,12 @@ public extension Array where Element == SPMGraphConfig.Lint.Rule {
     .abcFeatureModuleShouldNotDependOnThirdParties,
     .ruleThatChecksTheSourceFilesContent,
     // Example of how to use built in rules with your own conditions.
-    // Note that `.liveModuleLiveDependency()` and `.baseOrInterfaceModuleLiveDependency()` are
+    // Note that `.unusedDependencies()`, `.liveModuleLiveDependency()` and `.baseOrInterfaceModuleLiveDependency()` are
     // enabled by default as part of the `.default` ones, so consider removing `.default` and picking the
     // ones you wish to use!
+    .unusedDependencies(
+      excludedDependencies: ["DependencyToExclude"] // Exclude specific dependencies
+    ),
     .liveModuleLiveDependency(
       isLiveModule: {
         $0.name.hasSuffix("Implementation")
