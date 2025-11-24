@@ -188,7 +188,7 @@ struct SPMGraphConfigTests {
     @Test("It has the correct properties")
     func testRuleProperties() {
       // GIVEN
-      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies
+      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies()
 
       // THEN
       #expect(rule.id == "unusedDependencies")
@@ -198,7 +198,7 @@ struct SPMGraphConfigTests {
         To keep the project clean and avoid long compile times, a Module should not have any unused dependencies.
         
         - Note: It does blindly expects the target to match the product name, and doesn't yet consider
-        the multiple targets that compose a product (open improvement). 
+        the multiple targets that compose a product (open improvement).
         
         - Note: For `@_exported` usages, there will be an error in case only the exported module is used.
         For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
@@ -210,7 +210,7 @@ struct SPMGraphConfigTests {
     @Test("Validate detects unused dependencies")
     func testValidateDetectsUnusedDependencies() async throws {
       // GIVEN
-      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies
+      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies()
 
       // WHEN
       let package = try await loadFixturePackage()
@@ -233,7 +233,7 @@ struct SPMGraphConfigTests {
     @Test("Validate with excluded suffixes ignores matching modules")
     func testValidateWithExcludedSuffixes() async throws {
       // GIVEN
-      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies
+      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies()
 
       // WHEN - Exclude modules with "WithUnusedDep" suffix
       let package = try await loadFixturePackage()
@@ -241,6 +241,21 @@ struct SPMGraphConfigTests {
 
       // THEN
       #expect(errors.isEmpty, "BaseModule should be ignored")
+    }
+
+    @Test("Validate with excluded dependencies ignores specific dependencies")
+    func testValidateWithExcludedDependencies() async throws {
+      // GIVEN
+      let rule = SPMGraphConfig.Lint.Rule.unusedDependencies(
+        excludedDependencies: ["BaseModule"]
+      )
+
+      // WHEN
+      let package = try await loadFixturePackage()
+      let errors = rule.validate(package, [])
+
+      // THEN
+      #expect(errors.isEmpty, "BaseModule should be excluded from unused dependency checks")
     }
   }
 

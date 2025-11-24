@@ -102,11 +102,10 @@ typealias Validate = (Package, _ excludedSuffixes: [String]) -> [LocalizedError]
 public extension Array where Element == SPMGraphConfig.Lint.Rule {
   /// The default lint rules for users of the spmgraph lint functionality.
   ///
-  /// - note: **Most default rules allow for customization**, i.e. `liveModuleLiveDependency` can be used
-  /// directly when setting up your `SPMGraphConfig.swift` and with a custom implementation of both the `isLiveModule` and
-  /// the `excludedDependencies` parameters.
+  /// - note: **Most default rules allow for customization**, i.e. `liveModuleLiveDependency` and `unusedDependencies` can be used
+  /// directly when setting up your `SPMGraphConfig.swift` with custom parameters such as `excludedDependencies`.
   static let `default`: [SPMGraphConfig.Lint.Rule] = [
-    .unusedDependencies,
+    .unusedDependencies(),
     .liveModuleLiveDependency(),
     .baseOrInterfaceModuleLiveDependency(),
   ]
@@ -212,61 +211,69 @@ public extension SPMGraphConfig.Lint.Rule {
   /// - note: For `@_exported` usages, there will be an error in case only the exported module is used.
   /// For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target there will be
   /// a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
-  static let unusedDependencies = Self(
-    id: "unusedDependencies",
-    name: "Unused linked dependencies",
-    abstract: """
-      To keep the project clean and avoid long compile times, a Module should not have any unused dependencies.
-      
-      - Note: It does blindly expects the target to match the product name, and doesn't yet consider
-      the multiple targets that compose a product (open improvement). 
-      
-      - Note: For `@_exported` usages, there will be an error in case only the exported module is used.
-      For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
-      there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
-      """,
-    validate: { package, excludedSuffixes in
-      let errors: [SPMGraphConfig.Lint.Error] = package.modules
-        .filter { !$0.containsOneOf(suffixes: excludedSuffixes) && !$0.isFeature }
-        .sorted()
-        .compactMap { module in
-          let dependencies = module
-            .dependenciesFilteringOutLiveInUITestSupport
-            .filter { dependency in
-              let isExcluded = dependency.containsOneOf(suffixes: excludedSuffixes)
-              return !isExcluded && dependency.shouldBeImported
-            }
-          let swiftFiles = try? findSwiftFiles(in: module.path.pathString)
+  ///
+  /// - Parameters:
+  ///   - excludedDependencies: A list of dependency names that should be excluded from unused dependency checks (e.g., umbrella dependencies).
+  static func unusedDependencies(
+    excludedDependencies: [String] = []
+  ) -> Self {
+    Self(
+      id: "unusedDependencies",
+      name: "Unused linked dependencies",
+      abstract: """
+        To keep the project clean and avoid long compile times, a Module should not have any unused dependencies.
+        
+        - Note: It does blindly expects the target to match the product name, and doesn't yet consider
+        the multiple targets that compose a product (open improvement).
+        
+        - Note: For `@_exported` usages, there will be an error in case only the exported module is used.
+        For example, module Networking exports module NetworkingHelpers, if only NetworkingHelpers is used by a target
+        there will be a lint error, while if both Networking and NetworkingHelpers are used there will be no error.
+        """,
+      validate: { package, excludedSuffixes in
+        let errors: [SPMGraphConfig.Lint.Error] = package.modules
+          .filter { !$0.containsOneOf(suffixes: excludedSuffixes) && !$0.isFeature }
+          .sorted()
+          .compactMap { module in
+            let dependencies = module
+              .dependenciesFilteringOutLiveInUITestSupport
+              .filter { dependency in
+                let isExcluded = dependency.containsOneOf(suffixes: excludedSuffixes)
+                let isExcludedDependency = excludedDependencies.contains(dependency.name)
+                return !isExcluded && !isExcludedDependency && dependency.shouldBeImported
+              }
+            let swiftFiles = try? findSwiftFiles(in: module.path.pathString)
 
-          return dependencies.compactMap { dependency in
-            let filePaths = swiftFiles ?? []
-            var isDependencyUsed = false
-            for filePath in filePaths {
-              let fileContent = try? String(contentsOfFile: filePath, encoding: .utf8)
-              let regexPattern =
-                "import (enum |struct |class )?(\\b\(NSRegularExpression.escapedPattern(for: dependency.name))\\b)"
-              if let regex = try? NSRegularExpression(pattern: regexPattern, options: []) {
-                let range = NSRange(location: 0, length: fileContent?.utf16.count ?? 0)
-                let match = regex.firstMatch(in: fileContent ?? "", options: [], range: range)
-                if match != nil {
-                  isDependencyUsed = true
-                  break
+            return dependencies.compactMap { dependency in
+              let filePaths = swiftFiles ?? []
+              var isDependencyUsed = false
+              for filePath in filePaths {
+                let fileContent = try? String(contentsOfFile: filePath, encoding: .utf8)
+                let regexPattern =
+                  "import (enum |struct |class )?(\\b\(NSRegularExpression.escapedPattern(for: dependency.name))\\b)"
+                if let regex = try? NSRegularExpression(pattern: regexPattern, options: []) {
+                  let range = NSRange(location: 0, length: fileContent?.utf16.count ?? 0)
+                  let match = regex.firstMatch(in: fileContent ?? "", options: [], range: range)
+                  if match != nil {
+                    isDependencyUsed = true
+                    break
+                  }
                 }
               }
-            }
 
-            return isDependencyUsed
-              ? nil
-              : SPMGraphConfig.Lint.Error.unusedDependencies(
-                moduleName: module.name,
-                dependencyName: dependency.name
-              )
+              return isDependencyUsed
+                ? nil
+                : SPMGraphConfig.Lint.Error.unusedDependencies(
+                  moduleName: module.name,
+                  dependencyName: dependency.name
+                )
+            }
           }
-        }
-        .flatMap { $0 }
-      return errors
-    }
-  )
+          .flatMap { $0 }
+        return errors
+      }
+    )
+  }
 }
 
 private extension SPMGraphConfig.Lint.Rule {
